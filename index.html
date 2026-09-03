@@ -1,858 +1,1532 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Model Sets 11–13 · Exam + Word Meanings</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #f5f2eb;
-      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-      display: flex;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    #particleCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-    }
-    .sidebar {
-      width: 220px;
-      background: linear-gradient(180deg, #1e2b3c 0%, #2c3e50 100%);
-      padding: 1.8rem 1rem 2rem;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      flex-shrink: 0;
-      box-shadow: 4px 0 18px rgba(0,0,0,0.15);
-      z-index: 10;
-      border-right: 4px solid #b8860b;
-    }
-    .sidebar h2 {
-      color: #f5e6d3;
-      font-weight: 300;
-      letter-spacing: 2px;
-      font-size: 1.3rem;
-      border-bottom: 2px solid #b8860b;
-      padding-bottom: 0.7rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      text-shadow: 0 2px 3px rgba(0,0,0,0.3);
-    }
-    .menu-group { margin-bottom: 1.8rem; }
-    .menu-group-title {
-      color: #d4b48c;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 0.4rem;
-      font-weight: 600;
-      border-left: 3px solid #b8860b;
-      padding-left: 8px;
-    }
-    .menu-item {
-      display: block;
-      color: #d6dce0;
-      padding: 0.4rem 0.6rem 0.4rem 1.2rem;
-      font-size: 0.85rem;
-      border-radius: 30px 0 0 30px;
-      margin-bottom: 0.2rem;
-      transition: all 0.15s;
-      background: transparent;
-      border: none;
-      width: 100%;
-      text-align: left;
-      cursor: pointer;
-      font-weight: 400;
-      letter-spacing: 0.2px;
-    }
-    .menu-item:hover {
-      background: rgba(184, 134, 11, 0.25);
-      color: #fff4e0;
-      padding-left: 1.5rem;
-    }
-    .menu-item.set11 { border-left: 4px solid #e67e22; }
-    .menu-item.set12 { border-left: 4px solid #3498db; }
-    .menu-item.set13 { border-left: 4px solid #2ecc71; }
-    .menu-item.set11:hover { background: rgba(230, 126, 34, 0.2); }
-    .menu-item.set12:hover { background: rgba(52, 152, 219, 0.2); }
-    .menu-item.set13:hover { background: rgba(46, 204, 113, 0.2); }
-    .menu-divider { border-top: 1px solid #3d4f5e; margin: 1rem 0; }
-
-    .main-content { flex: 1; padding: 1.5rem 2rem 3rem; min-width: 0; }
-    .container { max-width: 1200px; margin: 0 auto; }
-    h1 {
-      font-size: 2.1rem;
-      font-weight: 500;
-      color: #2c3e4f;
-      border-left: 6px solid #b8860b;
-      padding-left: 1rem;
-      margin-bottom: 2rem;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .set-card {
-      background: white;
-      border-radius: 28px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-      padding: 1.8rem 1.8rem 0.5rem;
-      margin-bottom: 2.8rem;
-      scroll-margin-top: 20px;
-    }
-    .set-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      border-bottom: 2px dashed #d9d0c2;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-    .set-title h2 { font-weight: 500; color: #2c3e4f; font-size: 1.7rem; }
-    .set-title span {
-      background: #e8e0d6;
-      padding: 0.25rem 1rem;
-      border-radius: 40px;
-      font-size: 0.9rem;
-      color: #4a3f35;
-    }
-    .unit-block { margin-bottom: 2.2rem; }
-    .unit-head {
-      font-weight: 600;
-      font-size: 1.2rem;
-      color: #5f4e3c;
-      background: #ede7df;
-      display: inline-block;
-      padding: 0.15rem 1.2rem;
-      border-radius: 40px;
-      letter-spacing: 0.3px;
-      margin-bottom: 1rem;
-    }
-    .question-grid { display: flex; flex-direction: column; gap: 0.85rem; }
-
-    .q-item {
-      background: #fcfaf7;
-      border-radius: 16px;
-      padding: 0.9rem 1.3rem;
-      border-left: 4px solid #c9b69a;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-      transition: 0.15s;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 0.3rem 1rem;
-    }
-    .q-item.correct { border-left-color: #27ae60; background: #f0faf3; }
-    .q-item.wrong { border-left-color: #e74c3c; background: #fdf0ef; }
-    .q-label {
-      font-weight: 500;
-      color: #3a2f26;
-      min-width: 2.5rem;
-      font-size: 0.9rem;
-    }
-    .q-text {
-      flex: 1;
-      font-size: 0.98rem;
-      color: #1e1b18;
-      line-height: 1.5;
-      cursor: pointer;
-      border-radius: 4px;
-      padding: 0 2px;
-      transition: 0.1s;
-    }
-    .q-text:hover { background: #f0e3d3; }
-    .q-options {
-      width: 100%;
-      padding-left: 1.2rem;
-      margin-top: 0.4rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1.5rem;
-    }
-    .q-options label {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      font-size: 0.94rem;
-      color: #2d241e;
-      cursor: pointer;
-      padding: 0.2rem 0.6rem;
-      border-radius: 30px;
-      transition: 0.1s;
-    }
-    .q-options label:hover { background: #ede7df; }
-    .q-options input[type="radio"] {
-      accent-color: #b8860b;
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-    .q-options input[type="radio"]:disabled { cursor: default; }
-
-    .feedback {
-      width: 100%;
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 0.3rem 0.8rem;
-      border-radius: 30px;
-      margin-top: 0.3rem;
-      display: none;
-    }
-    .feedback.show { display: inline-block; }
-    .feedback.correct { color: #1e7e34; background: #d4edda; }
-    .feedback.wrong { color: #a71d2a; background: #f8d7da; }
-    .feedback .answer-reveal { font-weight: 600; color: #2c3e4f; }
-
-    .meaning-badge {
-      background: #1f3a3f;
-      color: #f0ede8;
-      font-size: 0.75rem;
-      padding: 0.1rem 0.8rem;
-      border-radius: 30px;
-      display: inline-block;
-      margin-left: 0.5rem;
-      border: 1px solid #b8860b;
-      animation: fadeIn 0.2s ease;
-    }
-    @keyframes fadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
-
-    .unseen-passage {
-      background: #eae3da;
-      padding: 1.2rem 1.8rem;
-      border-radius: 24px;
-      margin: 0.5rem 0 1.2rem 0;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: #1f1b17;
-      border-left: 6px solid #7d6b56;
-    }
-    .unseen-passage strong { color: #2b3e3b; }
-    .footnote {
-      font-size: 0.8rem;
-      color: #7b6e5f;
-      margin-top: 0.5rem;
-      border-top: 1px solid #ddd2c4;
-      padding-top: 0.6rem;
-      text-align: right;
-    }
-    .score-badge {
-      background: #2c3e50;
-      color: #f5ede4;
-      padding: 0.2rem 1.2rem;
-      border-radius: 40px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      display: inline-block;
-    }
-
-    @media (max-width: 800px) {
-      body { flex-direction: column; }
-      .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        padding: 1rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.3rem 0.8rem;
-        justify-content: center;
-        border-right: none;
-        border-bottom: 4px solid #b8860b;
-      }
-      .sidebar h2 { display: none; }
-      .menu-group { margin-bottom: 0; display: flex; flex-wrap: wrap; gap: 0.2rem; }
-      .menu-group-title { display: none; }
-      .menu-item { width: auto; padding: 0.2rem 1rem; border-radius: 40px; margin: 0; font-size: 0.75rem; }
-      .menu-divider { display: none; }
-      .main-content { padding: 1rem; }
-    }
-    @media (max-width: 600px) {
-      .q-item { flex-direction: column; align-items: flex-start; }
-      .q-options { padding-left: 0.5rem; }
-      .q-options label { font-size: 0.85rem; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Sets 11-13 · Exam + Word Meanings</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #f5f2eb;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .sidebar {
+            width: 220px;
+            background: linear-gradient(180deg, #1e2b3c 0%, #2c3e50 100%);
+            padding: 1.8rem 1rem 2rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+            box-shadow: 4px 0 18px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            border-right: 4px solid #b8860b;
+        }
+        .sidebar h2 {
+            color: #f5e6d3;
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #b8860b;
+            padding-bottom: 0.7rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        .menu-group {
+            margin-bottom: 1.8rem;
+        }
+        .menu-group-title {
+            color: #d4b48c;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            border-left: 3px solid #b8860b;
+            padding-left: 8px;
+        }
+        .menu-item {
+            display: block;
+            color: #d6dce0;
+            padding: 0.4rem 0.6rem 0.4rem 1.2rem;
+            font-size: 0.85rem;
+            border-radius: 30px 0 0 30px;
+            margin-bottom: 0.2rem;
+            transition: all 0.15s;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+        .menu-item:hover {
+            background: rgba(184, 134, 11, 0.25);
+            color: #fff4e0;
+            padding-left: 1.5rem;
+        }
+        .menu-item.set11 {
+            border-left: 4px solid #e67e22;
+        }
+        .menu-item.set12 {
+            border-left: 4px solid #3498db;
+        }
+        .menu-item.set13 {
+            border-left: 4px solid #2ecc71;
+        }
+        .menu-item.set11:hover {
+            background: rgba(230, 126, 34, 0.2);
+        }
+        .menu-item.set12:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+        .menu-item.set13:hover {
+            background: rgba(46, 204, 113, 0.2);
+        }
+        .menu-divider {
+            border-top: 1px solid #3d4f5e;
+            margin: 1rem 0;
+        }
+        .main-content {
+            flex: 1;
+            padding: 1.5rem 2rem 3rem;
+            min-width: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.1rem;
+            font-weight: 500;
+            color: #2c3e4f;
+            border-left: 6px solid #b8860b;
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .set-card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            padding: 1.8rem 1.8rem 0.5rem;
+            margin-bottom: 2.8rem;
+            scroll-margin-top: 20px;
+        }
+        .set-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 2px dashed #d9d0c2;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .set-title h2 {
+            font-weight: 500;
+            color: #2c3e4f;
+            font-size: 1.7rem;
+        }
+        .set-title span {
+            background: #e8e0d6;
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: #4a3f35;
+        }
+        .unit-block {
+            margin-bottom: 2.2rem;
+        }
+        .unit-head {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #5f4e3c;
+            background: #ede7df;
+            display: inline-block;
+            padding: 0.15rem 1.2rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            margin-bottom: 1rem;
+        }
+        .question-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+        .q-item {
+            background: #fcfaf7;
+            border-radius: 16px;
+            padding: 0.9rem 1.3rem;
+            border-left: 4px solid #c9b69a;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: 0.15s;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.3rem 1rem;
+            position: relative;
+        }
+        .q-item.correct {
+            border-left-color: #27ae60;
+            background: #f0faf3;
+        }
+        .q-item.wrong {
+            border-left-color: #e74c3c;
+            background: #fdf0ef;
+        }
+        .q-label {
+            font-weight: 500;
+            color: #3a2f26;
+            min-width: 2.5rem;
+            font-size: 0.9rem;
+        }
+        .q-text {
+            flex: 1;
+            font-size: 0.98rem;
+            color: #1e1b18;
+            line-height: 1.6;
+            cursor: pointer;
+            border-radius: 4px;
+            padding: 0 2px;
+            transition: 0.1s;
+            position: relative;
+            user-select: text;
+        }
+        .q-text:hover {
+            background: #f0e3d3;
+        }
+        .q-text .highlight {
+            background: #f0e3d3;
+            border-radius: 3px;
+        }
+        .q-options {
+            width: 100%;
+            padding-left: 1.2rem;
+            margin-top: 0.4rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.5rem;
+        }
+        .q-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.94rem;
+            color: #2d241e;
+            cursor: pointer;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            transition: 0.1s;
+        }
+        .q-options label:hover {
+            background: #ede7df;
+        }
+        .q-options input[type="radio"] {
+            accent-color: #b8860b;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .q-options input[type="radio"]:disabled {
+            cursor: default;
+        }
+        .feedback {
+            width: 100%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        .feedback.show {
+            display: inline-block;
+        }
+        .feedback.correct {
+            color: #1e7e34;
+            background: #d4edda;
+        }
+        .feedback.wrong {
+            color: #a71d2a;
+            background: #f8d7da;
+        }
+        .feedback .answer-reveal {
+            font-weight: 600;
+            color: #2c3e4f;
+        }
+        .meaning-badge {
+            background: #1f3a3f;
+            color: #f0ede8;
+            font-size: 0.8rem;
+            padding: 0.15rem 0.9rem;
+            border-radius: 30px;
+            display: inline-block;
+            margin-left: 0.6rem;
+            border: 1px solid #b8860b;
+            animation: fadeIn 0.25s ease;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            position: relative;
+            top: -1px;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85) translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .meaning-hint {
+            display: inline-block;
+            background: #b8860b20;
+            color: #7a5f2a;
+            font-size: 0.65rem;
+            padding: 0.05rem 0.5rem;
+            border-radius: 20px;
+            margin-left: 0.5rem;
+            font-weight: 400;
+            border: 1px dashed #b8860b60;
+        }
+        .unseen-passage {
+            background: #eae3da;
+            padding: 1.2rem 1.8rem;
+            border-radius: 24px;
+            margin: 0.5rem 0 1.2rem 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #1f1b17;
+            border-left: 6px solid #7d6b56;
+        }
+        .unseen-passage strong {
+            color: #2b3e3b;
+        }
+        .footnote {
+            font-size: 0.8rem;
+            color: #7b6e5f;
+            margin-top: 0.5rem;
+            border-top: 1px solid #ddd2c4;
+            padding-top: 0.6rem;
+            text-align: right;
+        }
+        .score-badge {
+            background: #2c3e50;
+            color: #f5ede4;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        @media (max-width: 800px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.3rem 0.8rem;
+                justify-content: center;
+                border-right: none;
+                border-bottom: 4px solid #b8860b;
+            }
+            .sidebar h2 {
+                display: none;
+            }
+            .menu-group {
+                margin-bottom: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.2rem;
+            }
+            .menu-group-title {
+                display: none;
+            }
+            .menu-item {
+                width: auto;
+                padding: 0.2rem 1rem;
+                border-radius: 40px;
+                margin: 0;
+                font-size: 0.75rem;
+            }
+            .menu-divider {
+                display: none;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .q-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .q-options {
+                padding-left: 0.5rem;
+            }
+            .q-options label {
+                font-size: 0.85rem;
+            }
+            .meaning-badge {
+                font-size: 0.7rem;
+                padding: 0.1rem 0.6rem;
+                margin-left: 0.3rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<canvas id="particleCanvas"></canvas>
+    <canvas id="particleCanvas"></canvas>
 
-<nav class="sidebar">
-  <h2>📘 MODEL SETS</h2>
-  <div class="menu-group">
-    <div class="menu-group-title">Navigation</div>
-    <button class="menu-item set11" data-target="set11">✦ Set 11</button>
-    <button class="menu-item set12" data-target="set12">✦ Set 12</button>
-    <button class="menu-item set13" data-target="set13">✦ Set 13</button>
-  </div>
-  <div class="menu-divider"></div>
-  <div class="menu-group">
-    <div class="menu-group-title">Jump to Unit</div>
-    <button class="menu-item" data-target="prose">📖 Prose</button>
-    <button class="menu-item" data-target="verse">🎭 Verse</button>
-    <button class="menu-item" data-target="rapid">⚡ Rapid</button>
-    <button class="menu-item" data-target="grammar">📝 Grammar</button>
-    <button class="menu-item" data-target="unseen">🔍 Unseen</button>
-  </div>
-  <div class="menu-divider"></div>
-  <div style="color:#8a9aa8; font-size:0.7rem; text-align:center; margin-top:0.5rem;">
-    <span style="display:inline-block; background:#b8860b; width:10px; height:10px; border-radius:50%;"></span> click word → বাংলা অর্থ
-  </div>
-</nav>
+    <nav class="sidebar">
+        <h2>📘 MODEL SETS</h2>
+        <div class="menu-group">
+            <div class="menu-group-title">Navigation</div>
+            <button class="menu-item set11" data-target="set11">✦ Set 11</button>
+            <button class="menu-item set12" data-target="set12">✦ Set 12</button>
+            <button class="menu-item set13" data-target="set13">✦ Set 13</button>
+        </div>
+        <div class="menu-divider"></div>
+        <div class="menu-group">
+            <div class="menu-group-title">Jump to Unit</div>
+            <button class="menu-item" data-target="prose">📖 Prose</button>
+            <button class="menu-item" data-target="verse">🎭 Verse</button>
+            <button class="menu-item" data-target="rapid">⚡ Rapid</button>
+            <button class="menu-item" data-target="grammar">📝 Grammar</button>
+            <button class="menu-item" data-target="unseen">🔍 Unseen</button>
+        </div>
+        <div class="menu-divider"></div>
+        <div style="color: #8a9aa8; font-size: 0.7rem; text-align: center; margin-top: 0.5rem;">
+            <span style="display: inline-block; background: #b8860b; width: 10px; height: 10px; border-radius: 50%;"></span>
+            <span style="display: inline-block; background: #27ae60; width: 10px; height: 10px; border-radius: 50%; margin-left: 0.5rem;"></span> correct
+            <span style="display: inline-block; background: #e74c3c; width: 10px; height: 10px; border-radius: 50%; margin-left: 0.5rem;"></span> wrong
+            <br>
+            <span style="font-size: 0.6rem; opacity: 0.7;">click any word → বাংলা অর্থ</span>
+        </div>
+    </nav>
 
-<div class="main-content">
-  <div class="container">
-    <h1>
-      <span>📘 Model Sets 11–13 · Exam + Meanings</span>
-      <span class="score-badge" id="globalScore">0 / 120</span>
-    </h1>
+    <div class="main-content">
+        <div class="container">
+            <h1>
+                <span>📘 Model Sets 11–13 · Exam + Meanings</span>
+                <span class="score-badge" id="globalScore">0 / 120</span>
+            </h1>
 
-    <!-- SET 11 -->
-    <div class="set-card" id="set11">
-      <div class="set-title"><h2>Set 11</h2><span>40 marks</span></div>
-      <div class="unit-block" id="prose"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set11-prose"></div></div>
-      <div class="unit-block" id="verse"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set11-verse"></div></div>
-      <div class="unit-block" id="rapid"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set11-rapid"></div></div>
-      <div class="unit-block" id="grammar"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set11-grammar"></div></div>
-      <div class="unit-block" id="unseen"><div class="unit-head">🔍 Unit-V · Unseen</div>
-        <div class="unseen-passage"><strong>Passage (Set 11):</strong> In the middle of the night, Shankar was waken up by a strange loud noise from the forest. There seemed to be a huge turmoil in the jungles. Alvarez too had been up. They listen carefully - and what they heard was truly strange. They had no clue about what was happening. Shankar switched on his torch and was about to leave the tent, but Alvarez stopped him. He said, "Don't rush out in these unknown jungles at night. I have cautioned you many times. Besides, where is your riffle?" It was pitched dark outside. What they saw in the torch light defied logic. Wild animals were running desperately, trampling on bushes and small plants. They came out of the mountain forest on the west and ran towards the hill on the east. There were hyenas, baboons and wild buffalos. Two leopards passed close by them.</div>
-        <div class="question-grid" id="set11-unseen"></div>
-      </div>
+            <!-- SET 11 -->
+            <div class="set-card" id="set11">
+                <div class="set-title"><h2>Set 11</h2><span>40 marks</span></div>
+                <div class="unit-block" id="prose"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set11-prose"></div></div>
+                <div class="unit-block" id="verse"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set11-verse"></div></div>
+                <div class="unit-block" id="rapid"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set11-rapid"></div></div>
+                <div class="unit-block" id="grammar"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set11-grammar"></div></div>
+                <div class="unit-block" id="unseen"><div class="unit-head">🔍 Unit-V · Unseen</div>
+                    <div class="unseen-passage"><strong>Passage (Set 11):</strong> In the middle of the night, Shankar was waken up by a strange loud noise from the forest. There seemed to be a huge turmoil in the jungles. Alvarez too had been up. They listen carefully - and what they heard was truly strange. They had no clue about what was happening. Shankar switched on his torch and was about to leave the tent, but Alvarez stopped him. He said, "Don't rush out in these unknown jungles at night. I have cautioned you many times. Besides, where is your riffle?" It was pitched dark outside. What they saw in the torch light defied logic. Wild animals were running desperately, trampling on bushes and small plants. They came out of the mountain forest on the west and ran towards the hill on the east. There were hyenas, baboons and wild buffalos. Two leopards passed close by them.</div>
+                    <div class="question-grid" id="set11-unseen"></div>
+                </div>
+            </div>
+
+            <!-- SET 12 -->
+            <div class="set-card" id="set12">
+                <div class="set-title"><h2>Set 12</h2><span>40 marks</span></div>
+                <div class="unit-block"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set12-prose"></div></div>
+                <div class="unit-block"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set12-verse"></div></div>
+                <div class="unit-block"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set12-rapid"></div></div>
+                <div class="unit-block"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set12-grammar"></div></div>
+                <div class="unit-block"><div class="unit-head">🔍 Unit-V · Unseen</div>
+                    <div class="unseen-passage"><strong>Passage (Set 12):</strong> Seventy seven years old Shiv Charan Yadav has been burning the midnight oil for the past forty six years in repeated attempts to clear the secondary school examination at Khohari village near Behror in Alwar district. Not one to accept failure, he will be taking the exam for the forty-seventh time this year. The Rajasthan Board of Secondary Education has proven a tough nut for him to crack. He has failed forty six times. One Thursday, he exuded confidence about success in his forty-seventh attempt, "I appeared for the first time in 1968. I failed that year. Each time I take the exam, I fail in one or the other subjects. This time I hope to pass in all. I have taken classes from some school teachers. This time I hope to clear the exam." Yadav lost his mother when he was two months old. His father died when he was ten. His uncle and his other family members brought him up.</div>
+                    <div class="question-grid" id="set12-unseen"></div>
+                </div>
+            </div>
+
+            <!-- SET 13 -->
+            <div class="set-card" id="set13">
+                <div class="set-title"><h2>Set 13</h2><span>40 marks</span></div>
+                <div class="unit-block"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set13-prose"></div></div>
+                <div class="unit-block"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set13-verse"></div></div>
+                <div class="unit-block"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set13-rapid"></div></div>
+                <div class="unit-block"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set13-grammar"></div></div>
+                <div class="unit-block"><div class="unit-head">🔍 Unit-V · Unseen</div>
+                    <div class="unseen-passage"><strong>Passage (Set 13):</strong> The tomb of Humayun, the second Mughal emperor was built between 1569 and 1571 by the Persian architect Mirak Mirza Ghiyath under the instructions of Humayun's grieving widow, Hamida Banu Begum. The oldest garden-tomb in the Indian sub-continent, it is the first example of the Persian influence on Indian architecture. It houses more than 1000 graves, which has led to it being called 'the Dormitory of the Mughals'. It houses the tombs of the Mughal emperors, Jahandar Shah and Farrukh Siyar, and also of Darah Shikoh - Shahjahan's murdered son. The tomb is a protected monument which means the defacing it in any way would cost you Rs. 5000 or three months in prison. It is on the world Heritage list, and recognized internationally as a monument that deserves protection for the benefit of all humanity. A massive restoration process was carried out over four years to ensure that the maintenance of the tomb met international standards. Between the years 2000 and 2003, the Agha Khan Trust for Culture, in collaboration with the Archaeological Survey of India, carried out a project to revitalise the 30 acre garden and the monument itself. The tomb is located near the shrine of an important Sufi Saint, Nizamuddin Auliya. It is considered auspicious to be buried near the tomb of a saint, and there are various other monuments outside the main tomb.</div>
+                    <div class="question-grid" id="set13-unseen"></div>
+                </div>
+            </div>
+            <div class="footnote">Select an option → instant feedback · 🎆 correct: golden shower · 🌧️ wrong: heavy rain · <strong>click any word → বাংলা অর্থ</strong></div>
+        </div>
     </div>
 
-    <!-- SET 12 -->
-    <div class="set-card" id="set12">
-      <div class="set-title"><h2>Set 12</h2><span>40 marks</span></div>
-      <div class="unit-block"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set12-prose"></div></div>
-      <div class="unit-block"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set12-verse"></div></div>
-      <div class="unit-block"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set12-rapid"></div></div>
-      <div class="unit-block"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set12-grammar"></div></div>
-      <div class="unit-block"><div class="unit-head">🔍 Unit-V · Unseen</div>
-        <div class="unseen-passage"><strong>Passage (Set 12):</strong> Seventy seven years old Shiv Charan Yadav has been burning the midnight oil for the past forty six years in repeated attempts to clear the secondary school examination at Khohari village near Behror in Alwar district. Not one to accept failure, he will be taking the exam for the forty-seventh time this year. The Rajasthan Board of Secondary Education has proven a tough nut for him to crack. He has failed forty six times. One Thursday, he exuded confidence about success in his forty-seventh attempt, "I appeared for the first time in 1968. I failed that year. Each time I take the exam, I fail in one or the other subjects. This time I hope to pass in all. I have taken classes from some school teachers. This time I hope to clear the exam." Yadav lost his mother when he was two months old. His father died when he was ten. His uncle and his other family members brought him up.</div>
-        <div class="question-grid" id="set12-unseen"></div>
-      </div>
-    </div>
+    <script>
+        (function() {
+            // ---------- PARTICLE SYSTEM ----------
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H;
+            let particles = [];
+            let isAnimating = false;
+            let animationId = null;
 
-    <!-- SET 13 -->
-    <div class="set-card" id="set13">
-      <div class="set-title"><h2>Set 13</h2><span>40 marks</span></div>
-      <div class="unit-block"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set13-prose"></div></div>
-      <div class="unit-block"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set13-verse"></div></div>
-      <div class="unit-block"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set13-rapid"></div></div>
-      <div class="unit-block"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set13-grammar"></div></div>
-      <div class="unit-block"><div class="unit-head">🔍 Unit-V · Unseen</div>
-        <div class="unseen-passage"><strong>Passage (Set 13):</strong> The tomb of Humayun, the second Mughal emperor was built between 1569 and 1571 by the Persian architect Mirak Mirza Ghiyath under the instructions of Humayun's grieving widow, Hamida Banu Begum. The oldest garden-tomb in the Indian sub-continent, it is the first example of the Persian influence on Indian architecture. It houses more than 1000 graves, which has led to it being called 'the Dormitory of the Mughals'. It houses the tombs of the Mughal emperors, Jahandar Shah and Farrukh Siyar, and also of Darah Shikoh - Shahjahan's murdered son. The tomb is a protected monument which means the defacing it in any way would cost you Rs. 5000 or three months in prison. It is on the world Heritage list, and recognized internationally as a monument that deserves protection for the benefit of all humanity. A massive restoration process was carried out over four years to ensure that the maintenance of the tomb met international standards. Between the years 2000 and 2003, the Agha Khan Trust for Culture, in collaboration with the Archaeological Survey of India, carried out a project to revitalise the 30 acre garden and the monument itself. The tomb is located near the shrine of an important Sufi Saint, Nizamuddin Auliya. It is considered auspicious to be buried near the tomb of a saint, and there are various other monuments outside the main tomb.</div>
-        <div class="question-grid" id="set13-unseen"></div>
-      </div>
-    </div>
-    <div class="footnote">Select an option → instant feedback · 🎆 correct: golden shower · 🌧️ wrong: heavy rain · click any word → বাংলা অর্থ</div>
-  </div>
-</div>
-
-<script>
-  (function() {
-    // ---------- PARTICLE SYSTEM ----------
-    const canvas = document.getElementById('particleCanvas');
-    const ctx = canvas.getContext('2d');
-    let W, H;
-    let particles = [];
-    let isAnimating = false;
-    let animationId = null;
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-      constructor(x, y, type) {
-        this.x = x || W/2 + (Math.random() - 0.5) * 100;
-        this.y = y || -20;
-        this.type = type || 'correct';
-        if (this.type === 'correct') {
-          this.size = 3 + Math.random() * 8;
-          this.speed = 2 + Math.random() * 6;
-          this.wobble = Math.random() * 0.05;
-          this.angle = Math.random() * Math.PI * 2;
-          this.color = `hsl(${40 + Math.random() * 20}, 100%, ${60 + Math.random() * 30}%)`;
-          this.glow = true;
-          this.life = 1;
-          this.decay = 0.003 + Math.random() * 0.008;
-        } else {
-          this.size = 2 + Math.random() * 4;
-          this.speed = 8 + Math.random() * 14;
-          this.wobble = 0.02;
-          this.angle = Math.random() * Math.PI * 2;
-          this.color = `rgba(100, 120, 140, ${0.3 + Math.random() * 0.5})`;
-          this.glow = false;
-          this.life = 1;
-          this.decay = 0.002 + Math.random() * 0.005;
-          this.tail = 10 + Math.random() * 20;
-          this.x = Math.random() * W;
-          this.y = -20 - Math.random() * 100;
-        }
-        this.vx = (Math.random() - 0.5) * (this.type === 'correct' ? 1.5 : 0.5);
-        this.vy = this.speed;
-        this.gravity = this.type === 'correct' ? 0.02 : 0.05;
-      }
-
-      update() {
-        if (this.type === 'correct') {
-          this.x += Math.sin(this.angle) * 1.2 + this.vx * 0.5;
-          this.y += this.vy * 0.8;
-          this.vy += this.gravity;
-          this.angle += this.wobble;
-          this.life -= this.decay;
-          this.size *= 0.998;
-        } else {
-          this.x += Math.sin(this.angle) * 0.3;
-          this.y += this.vy;
-          this.vy += this.gravity;
-          this.life -= this.decay;
-        }
-        return this.life > 0 && this.y < H + 50;
-      }
-
-      draw(ctx) {
-        if (this.type === 'correct') {
-          const alpha = this.life;
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.shadowColor = '#ffd700';
-          ctx.shadowBlur = 20;
-          ctx.beginPath();
-          const spikes = 5;
-          const outerRadius = this.size;
-          const innerRadius = this.size * 0.4;
-          let rot = Math.PI / 2 * 3;
-          const step = Math.PI / spikes;
-          ctx.moveTo(this.x, this.y - outerRadius);
-          for (let i = 0; i < spikes; i++) {
-            ctx.lineTo(this.x + Math.cos(rot) * outerRadius, this.y + Math.sin(rot) * outerRadius);
-            rot += step;
-            ctx.lineTo(this.x + Math.cos(rot) * innerRadius, this.y + Math.sin(rot) * innerRadius);
-            rot += step;
-          }
-          ctx.closePath();
-          ctx.fillStyle = this.color;
-          ctx.fill();
-          ctx.restore();
-        } else {
-          const alpha = this.life * 0.7;
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.strokeStyle = this.color;
-          ctx.lineWidth = this.size * 0.6;
-          ctx.shadowColor = 'rgba(80,100,120,0.2)';
-          ctx.shadowBlur = 4;
-          ctx.beginPath();
-          ctx.moveTo(this.x, this.y);
-          ctx.lineTo(this.x + this.vx * 0.5, this.y + this.tail);
-          ctx.stroke();
-          ctx.restore();
-        }
-      }
-    }
-
-    function spawnParticles(type, count = 120) {
-      const centerX = W/2;
-      const centerY = H/3;
-      for (let i = 0; i < count; i++) {
-        let p;
-        if (type === 'correct') {
-          const angle = Math.random() * Math.PI * 2;
-          const radius = Math.random() * 300;
-          const x = centerX + Math.cos(angle) * radius;
-          const y = centerY + Math.sin(angle) * radius * 0.4 - 50;
-          p = new Particle(x, y, 'correct');
-          p.vy = 1 + Math.random() * 4;
-          p.vx = (Math.random() - 0.5) * 3;
-        } else {
-          p = new Particle(0, 0, 'wrong');
-        }
-        particles.push(p);
-      }
-      if (!isAnimating) {
-        isAnimating = true;
-        animate();
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, W, H);
-      particles = particles.filter(p => p.update());
-      for (let p of particles) p.draw(ctx);
-      if (particles.length > 0) {
-        animationId = requestAnimationFrame(animate);
-      } else {
-        isAnimating = false;
-        ctx.clearRect(0, 0, W, H);
-        if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
-      }
-    }
-
-    // ---------- DICTIONARY (Bengali meanings) ----------
-    const dict = {
-      'astrologer': 'জ্যোতিষী', 'transacted': 'সম্পন্ন', 'business': 'ব্যবসা', 'light': 'আলো', 'flare': 'শিখা',
-      'count': 'গণনা', 'amount': 'পরিমাণ', 'money': 'টাকা', 'annas': 'আনা', 'assertion': 'বক্তব্য',
-      'reason': 'কারণ', 'gratified': 'সন্তুষ্ট', 'attacker': 'আক্রমণকারী', 'crushed': 'চূর্ণ', 'lorry': 'ট্রাক',
-      'revenge': 'প্রতিশোধ', 'agitated': 'উত্তেজিত', 'semi-darkness': 'অর্ধ-অন্ধকার', 'park': 'পার্ক',
-      'hooting': 'শব্দ', 'cars': 'গাড়ি', 'swearing': 'গালি', 'jutka': 'জুটকা', 'drivers': 'চালক',
-      'babble': 'কোলাহল', 'crowd': 'ভিড়', 'realisation': 'উপলব্ধি', 'religions': 'ধর্ম', 'literature': 'সাহিত্য',
-      'stories': 'গল্প', 'languages': 'ভাষা', 'communications': 'যোগাযোগ', 'symbols': 'প্রতীক',
-      'bhaktas': 'ভক্ত', 'vedanta': 'বেদান্ত', 'guides': 'পথপ্রদর্শন', 'narrator': 'বর্ণনাকারী',
-      'reflection': 'প্রতিফলন', 'brilliant': 'উজ্জ্বল', 'streams': 'স্রোত', 'camp-fire': 'শিবিরের আগুন',
-      'juniper': 'জুনিপার', 'servants': 'চাকর', 'fuel': 'জ্বালানি', 'pine-wood': 'পাইন বন', 'tent': 'তাঁবু',
-      'frozen': 'হিমায়িত', 'river': 'নদী', 'steep': 'আবৃত', 'overspread': 'বিস্তৃত', 'mighty': 'শক্তিশালী',
-      'heart': 'হৃদয়', 'human': 'মানুষ', 'activities': 'কাজকর্ম', 'ships': 'জাহাজ', 'towers': 'মিনার',
-      'domes': 'গম্বুজ', 'theatres': 'থিয়েটার', 'temples': 'মন্দির', 'garment': 'পোশাক', 'beauty': 'সৌন্দর্য',
-      'morning': 'সকাল', 'evening': 'সন্ধ্যা', 'sunlight': 'সূর্যের আলো', 'silver': 'রূপা', 'blue': 'নীল',
-      'bangles': 'চুড়ি', 'rainbow': 'রামধনু', 'tinted': 'রঙিন', 'circles': 'বৃত্ত', 'radiant': 'দীপ্তিমান',
-      'leaves': 'পাতা', 'mountain': 'পাহাড়', 'mist': 'কুয়াশা', 'bloom': 'ফুল', 'cleaves': 'আঁকড়ে ধরে',
-      'middle-aged': 'মধ্যবয়সী', 'purple': 'বেগুনি', 'gold': 'সোনা', 'monotonous': 'একঘেয়ে',
-      'shining': 'চকচকে', 'gleaning': 'সংগ্রহ', 'sparkling': 'ঝলমলে', 'tide': 'জোয়ার', 'revelation': 'প্রকাশ',
-      'darkness': 'অন্ধকার', 'birds': 'পাখি', 'imminent': 'অবশ্যম্ভাবী', 'drops': 'ফোঁটা', 'indignant': 'ক্ষুব্ধ',
-      'blood': 'রক্ত', 'dimmed': 'ম্লান', 'gyre': 'ঘূর্ণি', 'leader': 'নেতা', 'history': 'ইতিহাস',
-      'king': 'রাজা', 'social': 'সামাজিক', 'norms': 'আদর্শ', 'falcon': 'বাজপাখি', 'troubling': 'উদ্বেগজনক',
-      'sight': 'দৃশ্য', 'slouching': 'ঝিমিয়ে পড়া', 'beast': 'জানোয়ার', 'window': 'জানালা', 'adversities': 'প্রতিকূলতা',
-      'nature': 'প্রকৃতি', 'struggle': 'সংগ্রাম', 'existence': 'অস্তিত্ব', 'cough': 'কাশি', 'cold': 'ঠান্ডা',
-      'pain': 'ব্যথা', 'trees': 'গাছ', 'shaking': 'কাঁপছে', 'smell': 'গন্ধ', 'rain': 'বৃষ্টি',
-      'hawker': 'ফেরিওয়ালা', 'sparrows': 'চড়ুই', 'twittering': 'চিৎকার', 'railway': 'রেলপথ',
-      'station': 'স্টেশন', 'front': 'সামনে', 'gate': 'দরজা', 'square': 'চত্বর', 'servant': 'চাকর',
-      'promised': 'প্রতিশ্রুতি', 'care': 'যত্ন', 'josephine': 'জোসেফিন', 'louise': 'লুইস',
-      'photographs': 'ছবি', 'suicide': 'আত্মহত্যা', 'victorian': 'ভিক্টোরিয়ান', 'society': 'সমাজ',
-      'feminine': 'নারীবাদী', 'brently': 'ব্রেন্টলি', 'symbolic': 'প্রতীকী', 'masculine': 'পুরুষতান্ত্রিক',
-      'importunities': 'আবেদন', 'terrified': 'আতঙ্কিত', 'fainted': 'মূর্ছা', 'screamed': 'চিৎকার',
-      'tragedy': 'ট্র্যাজেডি', 'family': 'পরিবার', 'hobbies': 'শখ', 'address': 'ঠিকানা',
-      'migrated': 'স্থানান্তরিত', 'rural': 'গ্রামীণ', 'retreat': 'আশ্রয়', 'self-possessed': 'আত্মসংযমী',
-      'disguised': 'ছদ্মবেশী', 'male': 'পুরুষ', 'ganymede': 'গ্যানিমিড', 'aliena': 'অ্যালিয়েনা',
-      'fredrick': 'ফ্রেডরিক', 'passive': 'কর্মবাচ্য', 'vendor': 'বিক্রেতা', 'remarkable': 'উল্লেখযোগ্য',
-      'complex': 'জটিল', 'phrasal': 'বাক্যাংশ', 'verb': 'ক্রিয়া', 'seized': 'আটক', 'met': 'মিলিত',
-      'arrested': 'গ্রেপ্তার', 'argued': 'তর্ক', 'steeped': 'আবিষ্ট', 'steepling': 'উঁচু',
-      'preposition': 'অব্যয়', 'journeyed': 'ভ্রমণ', 'midway': 'মাঝপথ', 'among': 'মধ্যে',
-      'through': 'মাধ্যমে', 'between': 'মধ্যবর্তী', 'unseen': 'অদেখা', 'passage': 'অনুচ্ছেদ',
-      'shankar': 'শঙ্কর', 'alvarez': 'আলভারেজ', 'strange': 'অদ্ভুত', 'noise': 'শব্দ', 'forest': 'বন',
-      'turmoil': 'বিশৃঙ্খলা', 'jungles': 'জঙ্গল', 'torch': 'টর্চ', 'cautioned': 'সতর্ক',
-      'rifle': 'বন্দুক', 'desperately': 'মরিয়া হয়ে', 'trampling': 'দলন', 'bushes': 'ঝোপ',
-      'hyenas': 'হায়না', 'baboons': 'বেবুন', 'buffalos': 'মহিষ', 'leopards': 'চিতাবাঘ',
-      'shiv': 'শিব', 'charan': 'চরণ', 'yadav': 'যাদব', 'examination': 'পরীক্ষা',
-      'secondary': 'মাধ্যমিক', 'school': 'স্কুল', 'village': 'গ্রাম', 'district': 'জেলা',
-      'failure': 'ব্যর্থতা', 'attempt': 'চেষ্টা', 'board': 'বোর্ড', 'education': 'শিক্ষা',
-      'confidence': 'আত্মবিশ্বাস', 'success': 'সাফল্য', 'subjects': 'বিষয়', 'teachers': 'শিক্ষক',
-      'mother': 'মা', 'father': 'পিতা', 'uncle': 'কাকা', 'members': 'সদস্য', 'brought': 'বড় করেছেন',
-      'tomb': 'সমাধি', 'humayun': 'হুমায়ুন', 'emperor': 'সম্রাট', 'persian': 'পারস্য',
-      'architect': 'স্থপতি', 'instructions': 'নির্দেশ', 'widow': 'বিধবা', 'garden': 'বাগান',
-      'sub-continent': 'উপমহাদেশ', 'influence': 'প্রভাব', 'architecture': 'স্থাপত্য',
-      'graves': 'কবর', 'dormitory': 'শয়নকক্ষ', 'protected': 'সুরক্ষিত', 'monument': 'স্মৃতিসৌধ',
-      'defacing': 'বিকৃতি', 'heritage': 'ঐতিহ্য', 'restoration': 'পুনরুদ্ধার', 'collaboration': 'সহযোগিতা',
-      'archaeological': 'প্রত্নতাত্ত্বিক', 'revitalise': 'পুনর্জীবিত', 'acre': 'একর', 'shrine': 'মাজার',
-      'sufi': 'সুফি', 'saint': 'সন্ত', 'auspicious': 'শুভ', 'buried': 'সমাধিস্থ'
-    };
-
-    function showMeaning(word, el) {
-      const old = el.parentElement.querySelector('.meaning-badge');
-      if (old) old.remove();
-      const lower = word.toLowerCase();
-      let meaning = dict[lower];
-      if (!meaning) {
-        for (let key in dict) {
-          if (key.startsWith(lower.substring(0,3)) && lower.length > 2) {
-            meaning = dict[key];
-            break;
-          }
-        }
-      }
-      if (meaning) {
-        const badge = document.createElement('span');
-        badge.className = 'meaning-badge';
-        badge.textContent = 'বাংলা: ' + meaning;
-        el.parentElement.appendChild(badge);
-        setTimeout(() => { if (badge.parentElement) badge.remove(); }, 5000);
-      } else {
-        const badge = document.createElement('span');
-        badge.className = 'meaning-badge';
-        badge.textContent = 'অর্থ খুঁজুন';
-        el.parentElement.appendChild(badge);
-        setTimeout(() => { if (badge.parentElement) badge.remove(); }, 3000);
-      }
-    }
-
-    // ---------- EXAM DATA ----------
-    const Q = {
-      s11prose: [
-        { q: 'The astrologer transacted his business with the light of a ________.', opts: ['hissing gas lamp','flare','cycle lamp','steel lamp'], ans: 'flare' },
-        { q: '"Count them. One man gave all that." — What amount of money was counted by them?', opts: ['Twelve and an annas','Twenty and a half annas','Twenty and five annas','Twelve and a half annas'], ans: 'Twelve and a half annas' },
-        { q: 'Assertion : Guru Nayak was gratified to hear that his attacker was crushed under a lorry. Reason : His sense of revenge was satisfied.', opts: ['Assertion true but reason false','Assertion false but reason true','Both assertion and reason true','Assertion does not match with reason'], ans: 'Both assertion and reason true' },
-        { q: 'What agitated the semi-darkness of the park?', opts: ['hooting of cars','swearing of jutka drivers','babble of crowd','all of these'], ans: 'all of these' },
-        { q: 'Nivedita has a sudden realisation that religions were only—', opts: ['literature','stories','languages','communications'], ans: 'languages' },
-        { q: 'Choose the true statement among the following.', opts: ['To Swamiji Gods were mere symbols','Swamiji thought Gods as forms seen by Bhaktas','Swamiji believed in Vedanta','Sri Ramakrishna knew about Swamiji\'s Vedantic Belief'], ans: 'Swamiji believed in Vedanta' },
-        { q: '"I believe that She guides me in every little thing I do," — The word \'She\' here refers to—', opts: ['Mother Kali','Sister Nivedita','Maa Sarada','Mother Teresa'], ans: 'Mother Kali' },
-        { q: 'At Pawan the narrator observed the reflection of brilliant light in the water of a—', opts: ['tank','river','lake','stream'], ans: 'tank' },
-        { q: 'Swamiji bathed in the ice-cold water of _____ streams on the second day.', opts: ['three','four','five','many'], ans: 'four' },
-        { q: 'Arrange sentences in proper order: (i) camp-fire made of juniper (ii) servants travel for fuel (iii) camp pitched in pine-wood (iv) tent set beside frozen river', opts: ['(iii),(iv),(i),(ii)','(i),(ii),(iii),(iv)','(iii),(iv),(ii),(i)','(iv),(iii),(ii),(i)'], ans: '(iii),(iv),(ii),(i)' }
-      ],
-      s11verse: [
-        { q: '"Never did sun more beautifully steep." — Here \'steep\' means ________.', opts: ['Overspread','look','set','rise'], ans: 'Overspread' },
-        { q: '"And all that mighty heart is lying still!" — The mighty heart is lying still because—', opts: ['human activities not yet started','merry birds silent','river gliding rapidly','lovely houses calm'], ans: 'human activities not yet started' },
-        { q: 'Ships, towers, domes, theatres and temples are instances of ________.', opts: ['natural objects','celestial objects','natural phenomena','man-made objects'], ans: 'man-made objects' },
-        { q: 'The city wears like a garment of the beauty of—', opts: ['morning','evening','river','sunlight'], ans: 'morning' },
-        { q: '\'Silver and blue coloured bangles,\' are compared to the—', opts: ['rainbow-tinted circles','radiant leaves','mountain mist','bloom that cleaves'], ans: 'mountain mist' },
-        { q: 'The colour suitable for a middle-aged woman is—', opts: ['reddish yellow','rainbow colour','silver and blue','purple and gold'], ans: 'purple and gold' },
-        { q: 'Choose true statement: (i) monotonous load (ii) shining loads (iii) gleaning burdens (iv) sparkling loads', opts: ['(ii),(iii)','(ii)','(i),(iv)','(iv)'], ans: '(ii),(iii)' },
-        { q: 'Match: Tide / Revelation / Darkness / Birds', opts: ['(i)D,(ii)A,(iii)B,(iv)C','(i)C,(ii)D,(iii)A,(iv)B','(i)B,(ii)C,(iii)A,(iv)D','(i)B,(ii)A,(iii)D,(iv)C'], ans: '(i)B,(ii)A,(iii)D,(iv)C' },
-        { q: 'The poet uses \'widening gyre\' because—', opts: ['represents powerful leader','describes golden past','depicts rise of powerful king','describes breakdown of social norms'], ans: 'describes breakdown of social norms' },
-        { q: 'When does the poet see the troubling sight?', opts: ['After watching falcon','After seeing blood-dimmed tide','After uttering \'The Second Coming\'','After observing slouching beast'], ans: 'After uttering \'The Second Coming\'' }
-      ],
-      s11rapid: [
-        { q: '"I hope you don\'t mind the open window", said Mrs. Sappleton ________.', opts: ['briskly','swiftly','rapidly','hastily'], ans: 'briskly' },
-        { q: 'What would happen if Senior Duke would not face adversities?', opts: ['not connected with nature','not know struggle for existence','not face cough and cold','not feel pain of life'], ans: 'not know struggle for existence' },
-        { q: 'Trees shaking, smell of rain, hawker, sparrows twittering — who saw these from where?', opts: ['Mr. Mallard from railway station','Mrs. Mallard from her room','Mrs. Mallard from front gate','Mr. Mallard from open square'], ans: 'Mrs. Mallard from her room' },
-        { q: 'Complete chart: Adam gave money to Orlando → requested to be servant → Orlando pleased → ?', opts: ['He promised to take care of him','He stopped to talk','He requested Orlando to give money','He went away'], ans: 'He promised to take care of him' },
-        { q: 'What does Josephine believe Louise is doing behind closed door?', opts: ['Nothing','Making herself ill','Looking at photographs','Killing herself'], ans: 'Making herself ill' },
-        { q: 'True/False order: (i) story open ended (ii) feminine view (iii) suicide (iv) Brently symbolic', opts: ['(i)F,(ii)T,(iii)F,(iv)T','(i)T,(ii)F,(iii)T,(iv)F','(i)F,(ii)T,(iii)F,(iv)T','(i)T,(ii)F,(iii)T,(iv)F'], ans: '(i)F,(ii)T,(iii)F,(iv)T' },
-        { q: '"She arose ... opened the door to sister\'s importunities." What if she didn\'t arise?', opts: ['sister terrified','sister fainted','sister left elsewhere','sister screamed'], ans: 'sister terrified' },
-        { q: 'What does Framton know about Mrs. Sappleton?', opts: ['Her tragedy','Her family history','Only name and address','Her hobbies'], ans: 'Only name and address' },
-        { q: 'Correct order: (i) Nuttel migrated (ii) met Mrs Sappleton (iii) Vera told story (iv) met Vera', opts: ['(i),(iv),(iii),(ii)','(i),(iii),(ii),(iv)','(iv),(i),(iii),(ii)','(iii),(i),(iv),(ii)'], ans: '(i),(iv),(iii),(ii)' },
-        { q: 'Rosalind disguised as male and called herself—', opts: ['Aliena','Sir Rowland de Boys','Ganymede','Fredrick'], ans: 'Ganymede' }
-      ],
-      s11grammar: [
-        { q: 'The nuts-vendor blew out his flare. (passive)', opts: ['His fare was blown out by the nuts-vendor.','The vendor was blown out by the flare.','The nuts were blown out by vendor.','The flare was blown out by the nuts.'], ans: 'The flare was blown out by the nuts.' },
-        { q: 'It was a remarkable place in many ways. (complex)', opts: ['It was a place which was remarkable in many ways.','It was that a remarkable place...','It was a place as it was remarkable...','None'], ans: 'It was a place which was remarkable in many ways.' },
-        { q: 'Leaving Islamabad, we caught up somewhere with the pilgrimage. (phrasal verb meaning)', opts: ['seized','met','arrested','argued'], ans: 'met' },
-        { q: 'Never did sun more beautifully ________. (correct verb)', opts: ['steeped','steep','steepling','was steeped'], ans: 'steep' },
-        { q: 'For she who has journeyed ________ life midway. (preposition)', opts: ['in','among','through','between'], ans: 'through' }
-      ],
-      s11unseen: [
-        { q: 'Shankar and Alvarez were sleeping in a ________.', opts: ['house','room','jungle hut','tent'], ans: 'tent' },
-        { q: 'Shankar was warned as he was going outside—', opts: ['without his riffle','without his torch','without Alvarez','without anyone else'], ans: 'without his riffle' },
-        { q: 'The sight defied logic to Shankar as—', opts: ['animals running towards hill without reason','such thing not happen','animals panic-stricken','animals had no reason to run at night'], ans: 'animals running towards hill without reason' },
-        { q: 'The bushes and small plants were ________ under the feet.', opts: ['squeezed','trampled','shaken','broken'], ans: 'trampled' },
-        { q: 'How was the night described?', opts: ['starlit','intensely dark','faintly dark','moonlit'], ans: 'intensely dark' }
-      ],
-      s12prose: [
-        { q: 'How is Amarnath remarkable for ages to the people?', opts: ['its simplicity','closeness and simplicity of nature','Heavenly beauty','serene natural objects'], ans: 'closeness and simplicity of nature' },
-        { q: 'What was the ancestral profession of the astrologer\'s forefathers?', opts: ['Service','Business','Farming','Dancing'], ans: 'Farming' },
-        { q: 'According to Trevor, the model beggar looks splendid in his—', opts: ['ragged clothes','appearance','manner','behaviour'], ans: 'ragged clothes' },
-        { q: 'Assertion: simple client took him to be prophetic. Reason: sharp gleam in eyes.', opts: ['assertion true reason false','both true','assertion false reason true','both false'], ans: 'both true' },
-        { q: 'The Swami imagined a group of ________ had suddenly come upon ________.', opts: ['Pilgrims, Mahadev','Bhaktas, Shiva','Shepherds, Mahadev','Monks, Kali'], ans: 'Shepherds, Mahadev' },
-        { q: 'The astrologer advised Guru Nayak ________.', opts: ['take next bus and be gone','take next train and be gone','stay in his house','not to travel at night'], ans: 'take next train and be gone' },
-        { q: 'True/False: (i) Hughie loved Laura (ii) Alan loved Laura (iii) beggar was Baron Hausberg (iv) beggar did not wear ragged cloth', opts: ['(i)T,(ii)F,(iii)F,(iv)T','(i)T,(ii)F,(iii)T,(iv)F','(i)F,(ii)T,(iii)T,(iv)F','(i)T,(ii)T,(iii)F,(iv)F'], ans: '(i)T,(ii)F,(iii)T,(iv)F' },
-        { q: 'Correct order: (i) wife demanded explanation (ii) astrologer reached home midnight (iii) "Twelve and half annas" (iv) flung coins and said count', opts: ['(iv),(iii),(ii),(i)','(iii),(i),(ii),(iv)','(ii),(i),(iv),(iii)','(ii),(iii),(iv),(i)'], ans: '(ii),(i),(iv),(iii)' },
-        { q: 'Laura\'s father had lost his temper and ________.', opts: ['job','wife','family','digestion'], ans: 'digestion' },
-        { q: 'Which statement true? (i) halted at Pahalgam for Ekadasi (ii) halted week only (iii) halted to observe pilgrims (iv) village of shepherds', opts: ['(i),(ii)','(i),(iv)','(i),(iii)','(ii),(iii)'], ans: '(i),(iv)' }
-      ],
-      s12verse: [
-        { q: 'Human being : Garment :: The city of London : ?', opts: ['Fields and sky','Sunlight','Beauty of morning','Majestic garment'], ans: 'Beauty of morning' },
-        { q: 'Some bangles are like ________ of sunlit ________.', opts: ['fields, sunflower','picture, morn','fields, corn','scene, landscape'], ans: 'fields, corn' },
-        { q: 'Assertion: houses seem asleep. Reason: mighty heart lying still.', opts: ['assertion incorrect reason correct','both correct and reason explains','both correct but reason not explanation','assertion correct reason incorrect'], ans: 'both correct and reason explains' },
-        { q: 'The \'falcon\' stands for—', opts: ['dark age','Christian Civilisation','bestial civilisation','none'], ans: 'Christian Civilisation' },
-        { q: 'All bright and glittering in the ________ air.', opts: ['Smokeless','Smoggy','Smooth','Pollution free'], ans: 'Smokeless' },
-        { q: 'Match: Tear / Leaves / Tokens / Wives', opts: ['(i)A,(ii)D,(iii)C,(iv)D','(i)B,(ii)C,(iii)A,(iv)D','(i)B,(ii)C,(iii)A,(iv)B','(i)D,(ii)C,(iii)B,(iv)A'], ans: '(i)B,(ii)C,(iii)A,(iv)D' },
-        { q: 'Mere ________ is loosed upon the world.', opts: ['Patriarchy','Matrimony','Anarchy','Democracy'], ans: 'Anarchy' },
-        { q: '"Dull would he be of soul" — Here \'dull\' means', opts: ['unintelligent','bored','devoid of sense of beauty','monotonous'], ans: 'devoid of sense of beauty' },
-        { q: 'Main theme of "The Bangle Sellers" is—', opts: ['Indian freedom struggle','Celebration of Indian womanhood','Celebration of colour','Man and nature'], ans: 'Celebration of Indian womanhood' },
-        { q: 'The terrifying beast rises out of', opts: ['sandy desert','ocean','cave','none'], ans: 'sandy desert' }
-      ],
-      s12rapid: [
-        { q: 'Lady Macbeth was a/an', opts: ['good woman','evil-minded and ambitious','shy woman','clever woman'], ans: 'evil-minded and ambitious' },
-        { q: 'Who caused the castle bell to ring?', opts: ['Montano','Iago','Cassio','Brabantio'], ans: 'Iago' },
-        { q: 'False statement: (i) Macbeth Duncan\'s close relative (ii) brave General (iii) Macduff\'s cousin (iv) high in opinion', opts: ['(i)','(iii)','(iv)','(ii)'], ans: '(iii)' },
-        { q: 'Orlando was the youngest son of—', opts: ['Adam','Sir Rowland de Boys','Frederick','Ferdinand'], ans: 'Sir Rowland de Boys' },
-        { q: 'Macbeth reacted when he saw Banquo\'s ghost:', opts: ['remained calm','panicked and spoke to ghost','accused Lady Macbeth','confessed murder'], ans: 'panicked and spoke to ghost' },
-        { q: 'Othello was summoned before the court—', opts: ['for noble employment','as culprit','both a and b','none'], ans: 'both a and b' },
-        { q: 'Match: Rosalind\'s cousin / Orlando\'s elder brother / usurper / enemy of Frederick', opts: ['(i)B,(ii)C,(iii)D,(iv)A','(i)B,(ii)C,(iii)A,(iv)D','(i)C,(ii)B,(iii)A,(iv)D','(i)A,(ii)D,(iii)C,(iv)B'], ans: '(i)B,(ii)C,(iii)D,(iv)A' },
-        { q: 'Diagram: fickle minded, submissive, ambitious, murderer → center?', opts: ['Duncan','Macbeth','Macduff','Banquo'], ans: 'Macbeth' },
-        { q: 'How did Iago manipulate Othello?', opts: ['openly accusing Desdemona','praising Cassio\'s honesty','subtly sowing suspicion','convincing Desdemona'], ans: 'subtly sowing suspicion' },
-        { q: 'Who accompanied Orlando when he escaped?', opts: ['Oliver','Frederick','Rosalind','Adam'], ans: 'Adam' }
-      ],
-      s12grammar: [
-        { q: 'Dull would he be of soul who could pass by ... (identify underlined clause)', opts: ['Noun clause','Adjective clause','Adverbial clause','Main clause'], ans: 'Adjective clause' },
-        { q: 'The nuts-vendor blew out his flare. (phrasal verb meaning)', opts: ['Extinguished','Defeated','Became exhausted','Reduced'], ans: 'Extinguished' },
-        { q: 'His father had bequeathed him his cavalry sword ... (change voice)', opts: ['He had been bequeathed ... by his father.','He was bequeathed ...','He had bequeathed ...','He bequeathed ...'], ans: 'He had been bequeathed ... by his father.' },
-        { q: 'The mighty heart ________ still.', opts: ['has been lied','is lying','lie','are lying'], ans: 'is lying' },
-        { q: 'The best lack conviction. — passive voice', opts: ['Conviction was lacked by the best.','Conviction has been lacked...','Conviction is lacked by the best.','Conviction may be lacked...'], ans: 'Conviction is lacked by the best.' }
-      ],
-      s12unseen: [
-        { q: 'Shiv Charan Yadav has appeared in Secondary Examination from—', opts: ['West Bengal Board','Bihar Board','Rajasthan Board','Delhi Board'], ans: 'Rajasthan Board' },
-        { q: 'Shiv Charan got success after his—', opts: ['40th attempt','44th attempt','46th attempt','47th attempt'], ans: '47th attempt' },
-        { q: 'Shiv Charan lost his mother only at the age of—', opts: ['ten years','two years','two months','ten months'], ans: 'two months' },
-        { q: 'Yadav has taken classes from—', opts: ['Coaching centre','School teachers','relatives','father'], ans: 'School teachers' },
-        { q: 'The word \'exuded\' means—', opts: ['discharged','captivated','contented','excused'], ans: 'discharged' }
-      ],
-      s13prose: [
-        { q: '\'Challenge is challenge\'. — The speaker was—', opts: ['the stranger','the astrologer','the magician','the groundnut seller'], ans: 'the stranger' },
-        { q: 'Assertion: Swamiji\'s orders to remove shoes in Kalighat temple. Reason: respect for worship.', opts: ['both true reason explains','both true reason not explains','assertion correct reason incorrect','assertion incorrect reason correct'], ans: 'both true reason explains' },
-        { q: '________ dedicated Swami Vivekananda to Her.', opts: ['Kali','Sister Nivedita','Sri Ramakrishna','Shiva'], ans: 'Sister Nivedita' },
-        { q: 'Match: astrologer charged / Guru Nayak gave / astrologer returned / pact settled', opts: ['(i)A,(ii)B,(iii)C,(iv)D','(i)B,(ii)C,(iii)A,(iv)D','(i)C,(ii)B,(iii)A,(iv)D','(i)D,(ii)C,(iii)A,(iv)B'], ans: '(i)B,(ii)C,(iii)A,(iv)D' },
-        { q: 'Correct order: (i) beggar on raised platform (ii) wizened old man (iii) Hughie found Trevor painting (iv) wrinkled parchment', opts: ['(i),(iii),(iv),(ii)','(iii),(ii),(i),(iv)','(ii),(iii),(iv),(i)','(iii),(i),(ii),(iv)'], ans: '(iii),(i),(ii),(iv)' },
-        { q: 'Thing that reflects philanthropic spirit:', opts: ['meeting model beggar','sympathy for wretched','give sovereign to helpless','none'], ans: 'give sovereign to helpless' },
-        { q: 'Diagram: Brahman/Impersonal + Mother/Personal → overlapping region represents?', opts: ['contrast','ultimate oneness','rejection','division'], ans: 'ultimate oneness' },
-        { q: 'Correct order: (i) astrologer reached midnight (ii) gave sacred ash (iii) addressed as Guru Nayak (iv) stranger gone after coins', opts: ['(ii),(i),(iv),(iii)','(iii),(ii),(i),(iv)','(ii),(iii),(i),(iv)','(iii),(ii),(iv),(i)'], ans: '(iii),(ii),(iv),(i)' },
-        { q: 'True statement: (i) Colonel did not like Hughie (ii) not allow (iii) fond (iv) meticulous', opts: ['(i)','(ii)','(iii)','(iv)'], ans: '(iii)' },
-        { q: 'The stranger bared his chest to show the ________.', opts: ['marks','scar','symbol','name'], ans: 'scar' }
-      ],
-      s13verse: [
-        { q: '\'The Second Coming\' was written after ________.', opts: ['French Revolution','World War I','World War II','Industrial Revolution'], ans: 'World War I' },
-        { q: 'Maiden\'s wrist → ? → middle aged woman', opts: ['Child of school going age','Old and wrinkled woman','Bride','none'], ans: 'Bride' },
-        { q: 'Match: sun / pass by without noticing / city / houses', opts: ['(i)A,(ii)D,(iii)C,(iv)B','(i)A,(ii)B,(iii)D,(iv)C','(i)D,(ii)C,(iii)B,(iv)A','(i)B,(ii)A,(iii)D,(iv)C'], ans: '(i)B,(ii)A,(iii)D,(iv)C' },
-        { q: 'Assertion: title refers literal return. Reason: poem optimistic.', opts: ['both true reason explains','both true reason not explains','assertion false reason true','assertion true reason false'], ans: 'assertion true reason false' },
-        { q: '"Some are flushed like the buds that dream." — buds refer to—', opts: ['maidens','buds','married woman','older woman'], ans: 'maidens' },
-        { q: 'The poem \'The Bangle Sellers\' is written by—', opts: ['R.K. Narayan','William Wordsworth','W.B. Yeats','Sarojini Naidu'], ans: 'Sarojini Naidu' },
-        { q: '"The centre can not hold" Why?', opts: ['new religion risen','personal despair','traditional values collapsed','process of enlightenment'], ans: 'traditional values collapsed' },
-        { q: '"Earth has not anything to show more fair" — poet talks about—', opts: ['London early morning','London afternoon','river Thames','houses asleep'], ans: 'London early morning' },
-        { q: 'Assertion: speaker thinks view boring. Reason: uses fair, beautiful.', opts: ['both true reason explains','both true reason not explains','assertion true reason false','assertion false reason true'], ans: 'assertion false reason true' },
-        { q: 'London has a ________ beauty.', opts: ['spontaneous','majestic','careless','pathetic'], ans: 'majestic' }
-      ],
-      s13rapid: [
-        { q: '"She sat with her head thrown back..." What if she never got news of husband\'s death?', opts: ['never felt free','never expressed herself','would have died','gone away'], ans: 'never felt free' },
-        { q: 'In the forest, Rosalind and Aliena were surprised to see—', opts: ['Celia\'s name carved','Rosalind\'s name carved','Aliena\'s name carved','Ganymede\'s name carved'], ans: 'Rosalind\'s name carved' },
-        { q: 'Best expresses theme of "The Story of an Hour"?', opts: ['unhappy marriages common','19th century marriages oppressive','joy in death immoral','society punished women'], ans: '19th century marriages oppressive' },
-        { q: 'True statement: (i) banished duke lawful (ii) alone took shelter (iii) usurper younger brother (iv) France united', opts: ['(i)','(ii),(iii)','(i),(iii)','(iii),(iv)'], ans: '(i),(iii)' },
-        { q: 'Desdemona\'s handkerchief was stolen by—', opts: ['Othello','Iago','Iago\'s wife','Cassio'], ans: 'Iago\'s wife' },
-        { q: 'Correct order: (i) Othello Moor (ii) brave soldier (iii) raised to General (iv) heroic against Turks', opts: ['(ii),(i),(iv),(iii)','(i),(ii),(iv),(iii)','(iv),(i),(ii),(iii)','(iii),(ii),(i),(iv)'], ans: '(i),(ii),(iv),(iii)' },
-        { q: 'True/False: (i) Brabantio rich senator (ii) Cassio young Venetian (iii) Iago crafty (iv) Cyprus medicine', opts: ['(i)F,(ii)F,(iii)T,(iv)F','(i)T,(ii)F,(iii)T,(iv)T','(i)T,(ii)F,(iii)T,(iv)F','(i)T,(ii)F,(iii)T,(iv)T'], ans: '(i)T,(ii)F,(iii)T,(iv)F' },
-        { q: 'Orlando saved Oliver from—', opts: ['fire','snake and tiger','lioness','snake and lioness'], ans: 'lioness' },
-        { q: 'The delicious ________ of rain was in the air.', opts: ['air','sound','wind','breath'], ans: 'breath' },
-        { q: 'Assertion: "Go away, I am not making myself ill." Reason: ?', opts: ['making room of her own','offended when sister knocked','trying to commit suicide','wanted to see movie'], ans: 'offended when sister knocked' }
-      ],
-      s13grammar: [
-        { q: 'He flung the coins ________ her and said, "Count them..."', opts: ['to','at','of','on'], ans: 'at' },
-        { q: 'He ________ a roar of laughter.', opts: ['brought into','stroke into','burst into','cried into'], ans: 'burst into' },
-        { q: 'Bangle seller\'s are we who bear our shining loads. (clause)', opts: ['subordinate noun','subordinate adjective','subordinate adverbial','principal'], ans: 'subordinate adjective' },
-        { q: 'After he got to know Hughie better, he liked him quite. (simple)', opts: ['He liked him quite to know Hughie better.','Getting to know Hughie better, he liked him quite.','He liked him well and got to know Hughie better.','He got to know better and liked Hughie well.'], ans: 'Getting to know Hughie better, he liked him quite.' },
-        { q: 'The falcon cannot hear the falconer. (voice)', opts: ['The falconer is not heard by the falcon.','The falconer cannot be heard to the falcon.','The falconer cannot be heard by the falcon.','The falconer can hear the falcon.'], ans: 'The falconer cannot be heard by the falcon.' }
-      ],
-      s13unseen: [
-        { q: '________ was the second Mughal Emperor.', opts: ['Akbar','Humayun','Babar','Jahangir'], ans: 'Humayun' },
-        { q: 'The oldest garden tomb in India is—', opts: ['Hamida Banu\'s tomb','Akbar\'s tomb','Mirak Mirza\'s tomb','Humayun\'s tomb'], ans: 'Humayun\'s tomb' },
-        { q: 'Statement A: constructed by Mirak Mirza Ghiyath. Statement B: built in 15th century.', opts: ['A contradicts B','B is reason of A','A true but B false','A and B independent'], ans: 'A true but B false' },
-        { q: 'Instructions to build Humayun\'s tomb given by—', opts: ['Mirak Mirza','Jahandar Shah','Hamida Banu Begum','Dara Shikoh'], ans: 'Hamida Banu Begum' },
-        { q: 'Humayun\'s tomb is located near—', opts: ['a market','another tomb','shrine of a Sufi saint','a prison'], ans: 'shrine of a Sufi saint' }
-      ]
-    };
-
-    // ----- RENDER WITH RADIO BUTTONS + WORD CLICK -----
-    let totalCorrect = 0;
-    const totalQuestions = 120;
-
-    function updateScore() {
-      document.getElementById('globalScore').textContent = totalCorrect + ' / ' + totalQuestions;
-    }
-
-    function renderSet(sectionId, data) {
-      const container = document.getElementById(sectionId);
-      if (!container) return;
-      container.innerHTML = '';
-      data.forEach((item, idx) => {
-        const div = document.createElement('div');
-        div.className = 'q-item';
-        const label = document.createElement('span');
-        label.className = 'q-label';
-        label.textContent = (idx+1)+'.';
-        const text = document.createElement('span');
-        text.className = 'q-text';
-        text.textContent = item.q;
-        // word click handler
-        text.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const sel = window.getSelection();
-          const word = sel.toString().trim();
-          if (word && word.length > 1) {
-            showMeaning(word, this);
-          }
-        });
-        const optsDiv = document.createElement('div');
-        optsDiv.className = 'q-options';
-        const feedback = document.createElement('div');
-        feedback.className = 'feedback';
-        const radioName = 'q_' + sectionId + '_' + idx;
-        item.opts.forEach((opt) => {
-          const lbl = document.createElement('label');
-          const radio = document.createElement('input');
-          radio.type = 'radio';
-          radio.name = radioName;
-          radio.value = opt;
-          radio.addEventListener('change', function() {
-            const allRadios = optsDiv.querySelectorAll('input[type="radio"]');
-            allRadios.forEach(r => r.disabled = true);
-            const isCorrect = (this.value === item.ans);
-            if (isCorrect) {
-              div.classList.add('correct');
-              feedback.className = 'feedback show correct';
-              feedback.innerHTML = '✅ Correct!';
-              totalCorrect++;
-              spawnParticles('correct', 180);
-            } else {
-              div.classList.add('wrong');
-              feedback.className = 'feedback show wrong';
-              feedback.innerHTML = '❌ Wrong. Correct answer: <span class="answer-reveal">' + item.ans + '</span>';
-              spawnParticles('wrong', 300);
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
             }
-            updateScore();
-          });
-          lbl.appendChild(radio);
-          lbl.appendChild(document.createTextNode(opt));
-          optsDiv.appendChild(lbl);
-        });
-        div.appendChild(label);
-        div.appendChild(text);
-        div.appendChild(optsDiv);
-        div.appendChild(feedback);
-        container.appendChild(div);
-      });
-    }
+            window.addEventListener('resize', resize);
+            resize();
 
-    // render all
-    renderSet('set11-prose', Q.s11prose);
-    renderSet('set11-verse', Q.s11verse);
-    renderSet('set11-rapid', Q.s11rapid);
-    renderSet('set11-grammar', Q.s11grammar);
-    renderSet('set11-unseen', Q.s11unseen);
+            class Particle {
+                constructor(x, y, type) {
+                    this.x = x || W / 2 + (Math.random() - 0.5) * 100;
+                    this.y = y || -20;
+                    this.type = type || 'correct';
+                    if (this.type === 'correct') {
+                        this.size = 3 + Math.random() * 8;
+                        this.speed = 2 + Math.random() * 6;
+                        this.wobble = Math.random() * 0.05;
+                        this.angle = Math.random() * Math.PI * 2;
+                        this.color = `hsl(${40 + Math.random() * 20}, 100%, ${60 + Math.random() * 30}%)`;
+                        this.glow = true;
+                        this.life = 1;
+                        this.decay = 0.003 + Math.random() * 0.008;
+                    } else {
+                        this.size = 2 + Math.random() * 4;
+                        this.speed = 8 + Math.random() * 14;
+                        this.wobble = 0.02;
+                        this.angle = Math.random() * Math.PI * 2;
+                        this.color = `rgba(100, 120, 140, ${0.3 + Math.random() * 0.5})`;
+                        this.glow = false;
+                        this.life = 1;
+                        this.decay = 0.002 + Math.random() * 0.005;
+                        this.tail = 10 + Math.random() * 20;
+                        this.x = Math.random() * W;
+                        this.y = -20 - Math.random() * 100;
+                    }
+                    this.vx = (Math.random() - 0.5) * (this.type === 'correct' ? 1.5 : 0.5);
+                    this.vy = this.speed;
+                    this.gravity = this.type === 'correct' ? 0.02 : 0.05;
+                }
 
-    renderSet('set12-prose', Q.s12prose);
-    renderSet('set12-verse', Q.s12verse);
-    renderSet('set12-rapid', Q.s12rapid);
-    renderSet('set12-grammar', Q.s12grammar);
-    renderSet('set12-unseen', Q.s12unseen);
+                update() {
+                    if (this.type === 'correct') {
+                        this.x += Math.sin(this.angle) * 1.2 + this.vx * 0.5;
+                        this.y += this.vy * 0.8;
+                        this.vy += this.gravity;
+                        this.angle += this.wobble;
+                        this.life -= this.decay;
+                        this.size *= 0.998;
+                    } else {
+                        this.x += Math.sin(this.angle) * 0.3;
+                        this.y += this.vy;
+                        this.vy += this.gravity;
+                        this.life -= this.decay;
+                    }
+                    return this.life > 0 && this.y < H + 50;
+                }
 
-    renderSet('set13-prose', Q.s13prose);
-    renderSet('set13-verse', Q.s13verse);
-    renderSet('set13-rapid', Q.s13rapid);
-    renderSet('set13-grammar', Q.s13grammar);
-    renderSet('set13-unseen', Q.s13unseen);
-
-    // SIDEBAR NAV
-    document.querySelectorAll('.menu-item[data-target]').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const target = this.dataset.target;
-        let el;
-        if (target === 'set11') el = document.getElementById('set11');
-        else if (target === 'set12') el = document.getElementById('set12');
-        else if (target === 'set13') el = document.getElementById('set13');
-        else {
-          el = document.getElementById(target);
-          if (!el) {
-            const all = document.querySelectorAll('.set-card');
-            for (let card of all) {
-              if (card.querySelector('#' + target)) { el = card; break; }
+                draw(ctx) {
+                    if (this.type === 'correct') {
+                        const alpha = this.life;
+                        ctx.save();
+                        ctx.globalAlpha = alpha;
+                        ctx.shadowColor = '#ffd700';
+                        ctx.shadowBlur = 20;
+                        ctx.beginPath();
+                        const spikes = 5;
+                        const outerRadius = this.size;
+                        const innerRadius = this.size * 0.4;
+                        let rot = Math.PI / 2 * 3;
+                        const step = Math.PI / spikes;
+                        ctx.moveTo(this.x, this.y - outerRadius);
+                        for (let i = 0; i < spikes; i++) {
+                            ctx.lineTo(this.x + Math.cos(rot) * outerRadius, this.y + Math.sin(rot) * outerRadius);
+                            rot += step;
+                            ctx.lineTo(this.x + Math.cos(rot) * innerRadius, this.y + Math.sin(rot) * innerRadius);
+                            rot += step;
+                        }
+                        ctx.closePath();
+                        ctx.fillStyle = this.color;
+                        ctx.fill();
+                        ctx.restore();
+                    } else {
+                        const alpha = this.life * 0.7;
+                        ctx.save();
+                        ctx.globalAlpha = alpha;
+                        ctx.strokeStyle = this.color;
+                        ctx.lineWidth = this.size * 0.6;
+                        ctx.shadowColor = 'rgba(80,100,120,0.2)';
+                        ctx.shadowBlur = 4;
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(this.x + this.vx * 0.5, this.y + this.tail);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
             }
-          }
-        }
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-  })();
-</script>
+
+            function spawnParticles(type, count = 120) {
+                const centerX = W / 2;
+                const centerY = H / 3;
+                for (let i = 0; i < count; i++) {
+                    let p;
+                    if (type === 'correct') {
+                        const angle = Math.random() * Math.PI * 2;
+                        const radius = Math.random() * 300;
+                        const x = centerX + Math.cos(angle) * radius;
+                        const y = centerY + Math.sin(angle) * radius * 0.4 - 50;
+                        p = new Particle(x, y, 'correct');
+                        p.vy = 1 + Math.random() * 4;
+                        p.vx = (Math.random() - 0.5) * 3;
+                    } else {
+                        p = new Particle(0, 0, 'wrong');
+                    }
+                    particles.push(p);
+                }
+                if (!isAnimating) {
+                    isAnimating = true;
+                    animate();
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, W, H);
+                particles = particles.filter(p => p.update());
+                for (let p of particles) p.draw(ctx);
+                if (particles.length > 0) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    isAnimating = false;
+                    ctx.clearRect(0, 0, W, H);
+                    if (animationId) { cancelAnimationFrame(animationId);
+                        animationId = null; }
+                }
+            }
+
+            // ---------- DICTIONARY (Bengali meanings) ----------
+            const dict = {
+                'astrologer': 'জ্যোতিষী',
+                'transacted': 'সম্পন্ন',
+                'business': 'ব্যবসা',
+                'light': 'আলো',
+                'flare': 'শিখা',
+                'count': 'গণনা',
+                'amount': 'পরিমাণ',
+                'money': 'টাকা',
+                'annas': 'আনা',
+                'assertion': 'বক্তব্য',
+                'reason': 'কারণ',
+                'gratified': 'সন্তুষ্ট',
+                'attacker': 'আক্রমণকারী',
+                'crushed': 'চূর্ণ',
+                'lorry': 'ট্রাক',
+                'revenge': 'প্রতিশোধ',
+                'agitated': 'উত্তেজিত',
+                'semi-darkness': 'অর্ধ-অন্ধকার',
+                'park': 'পার্ক',
+                'hooting': 'শব্দ',
+                'cars': 'গাড়ি',
+                'swearing': 'গালি',
+                'jutka': 'জুটকা',
+                'drivers': 'চালক',
+                'babble': 'কোলাহল',
+                'crowd': 'ভিড়',
+                'realisation': 'উপলব্ধি',
+                'religions': 'ধর্ম',
+                'literature': 'সাহিত্য',
+                'stories': 'গল্প',
+                'languages': 'ভাষা',
+                'communications': 'যোগাযোগ',
+                'symbols': 'প্রতীক',
+                'bhaktas': 'ভক্ত',
+                'vedanta': 'বেদান্ত',
+                'guides': 'পথপ্রদর্শন',
+                'narrator': 'বর্ণনাকারী',
+                'reflection': 'প্রতিফলন',
+                'brilliant': 'উজ্জ্বল',
+                'streams': 'স্রোত',
+                'camp-fire': 'শিবিরের আগুন',
+                'juniper': 'জুনিপার',
+                'servants': 'চাকর',
+                'fuel': 'জ্বালানি',
+                'pine-wood': 'পাইন বন',
+                'tent': 'তাঁবু',
+                'frozen': 'হিমায়িত',
+                'river': 'নদী',
+                'steep': 'আবৃত',
+                'overspread': 'বিস্তৃত',
+                'mighty': 'শক্তিশালী',
+                'heart': 'হৃদয়',
+                'human': 'মানুষ',
+                'activities': 'কাজকর্ম',
+                'ships': 'জাহাজ',
+                'towers': 'মিনার',
+                'domes': 'গম্বুজ',
+                'theatres': 'থিয়েটার',
+                'temples': 'মন্দির',
+                'garment': 'পোশাক',
+                'beauty': 'সৌন্দর্য',
+                'morning': 'সকাল',
+                'evening': 'সন্ধ্যা',
+                'sunlight': 'সূর্যের আলো',
+                'silver': 'রূপা',
+                'blue': 'নীল',
+                'bangles': 'চুড়ি',
+                'rainbow': 'রামধনু',
+                'tinted': 'রঙিন',
+                'circles': 'বৃত্ত',
+                'radiant': 'দীপ্তিমান',
+                'leaves': 'পাতা',
+                'mountain': 'পাহাড়',
+                'mist': 'কুয়াশা',
+                'bloom': 'ফুল',
+                'cleaves': 'আঁকড়ে ধরে',
+                'middle-aged': 'মধ্যবয়সী',
+                'purple': 'বেগুনি',
+                'gold': 'সোনা',
+                'monotonous': 'একঘেয়ে',
+                'shining': 'চকচকে',
+                'gleaning': 'সংগ্রহ',
+                'sparkling': 'ঝলমলে',
+                'tide': 'জোয়ার',
+                'revelation': 'প্রকাশ',
+                'darkness': 'অন্ধকার',
+                'birds': 'পাখি',
+                'imminent': 'অবশ্যম্ভাবী',
+                'drops': 'ফোঁটা',
+                'indignant': 'ক্ষুব্ধ',
+                'blood': 'রক্ত',
+                'dimmed': 'ম্লান',
+                'gyre': 'ঘূর্ণি',
+                'leader': 'নেতা',
+                'history': 'ইতিহাস',
+                'king': 'রাজা',
+                'social': 'সামাজিক',
+                'norms': 'আদর্শ',
+                'falcon': 'বাজপাখি',
+                'troubling': 'উদ্বেগজনক',
+                'sight': 'দৃশ্য',
+                'slouching': 'ঝিমিয়ে পড়া',
+                'beast': 'জানোয়ার',
+                'window': 'জানালা',
+                'adversities': 'প্রতিকূলতা',
+                'nature': 'প্রকৃতি',
+                'struggle': 'সংগ্রাম',
+                'existence': 'অস্তিত্ব',
+                'cough': 'কাশি',
+                'cold': 'ঠান্ডা',
+                'pain': 'ব্যথা',
+                'trees': 'গাছ',
+                'shaking': 'কাঁপছে',
+                'smell': 'গন্ধ',
+                'rain': 'বৃষ্টি',
+                'hawker': 'ফেরিওয়ালা',
+                'sparrows': 'চড়ুই',
+                'twittering': 'চিৎকার',
+                'railway': 'রেলপথ',
+                'station': 'স্টেশন',
+                'front': 'সামনে',
+                'gate': 'দরজা',
+                'square': 'চত্বর',
+                'servant': 'চাকর',
+                'promised': 'প্রতিশ্রুতি',
+                'care': 'যত্ন',
+                'josephine': 'জোসেফিন',
+                'louise': 'লুইস',
+                'photographs': 'ছবি',
+                'suicide': 'আত্মহত্যা',
+                'victorian': 'ভিক্টোরিয়ান',
+                'society': 'সমাজ',
+                'feminine': 'নারীবাদী',
+                'brently': 'ব্রেন্টলি',
+                'symbolic': 'প্রতীকী',
+                'masculine': 'পুরুষতান্ত্রিক',
+                'importunities': 'আবেদন',
+                'terrified': 'আতঙ্কিত',
+                'fainted': 'মূর্ছা',
+                'screamed': 'চিৎকার',
+                'tragedy': 'ট্র্যাজেডি',
+                'family': 'পরিবার',
+                'hobbies': 'শখ',
+                'address': 'ঠিকানা',
+                'migrated': 'স্থানান্তরিত',
+                'rural': 'গ্রামীণ',
+                'retreat': 'আশ্রয়',
+                'self-possessed': 'আত্মসংযমী',
+                'disguised': 'ছদ্মবেশী',
+                'male': 'পুরুষ',
+                'ganymede': 'গ্যানিমিড',
+                'aliena': 'অ্যালিয়েনা',
+                'fredrick': 'ফ্রেডরিক',
+                'passive': 'কর্মবাচ্য',
+                'vendor': 'বিক্রেতা',
+                'remarkable': 'উল্লেখযোগ্য',
+                'complex': 'জটিল',
+                'phrasal': 'বাক্যাংশ',
+                'verb': 'ক্রিয়া',
+                'seized': 'আটক',
+                'met': 'মিলিত',
+                'arrested': 'গ্রেপ্তার',
+                'argued': 'তর্ক',
+                'steeped': 'আবিষ্ট',
+                'steepling': 'উঁচু',
+                'preposition': 'অব্যয়',
+                'journeyed': 'ভ্রমণ',
+                'midway': 'মাঝপথ',
+                'among': 'মধ্যে',
+                'through': 'মাধ্যমে',
+                'between': 'মধ্যবর্তী',
+                'unseen': 'অদেখা',
+                'passage': 'অনুচ্ছেদ',
+                'shankar': 'শঙ্কর',
+                'alvarez': 'আলভারেজ',
+                'strange': 'অদ্ভুত',
+                'noise': 'শব্দ',
+                'forest': 'বন',
+                'turmoil': 'বিশৃঙ্খলা',
+                'jungles': 'জঙ্গল',
+                'torch': 'টর্চ',
+                'cautioned': 'সতর্ক',
+                'rifle': 'বন্দুক',
+                'desperately': 'মরিয়া হয়ে',
+                'trampling': 'দলন',
+                'bushes': 'ঝোপ',
+                'hyenas': 'হায়না',
+                'baboons': 'বেবুন',
+                'buffalos': 'মহিষ',
+                'leopards': 'চিতাবাঘ',
+                'shiv': 'শিব',
+                'charan': 'চরণ',
+                'yadav': 'যাদব',
+                'examination': 'পরীক্ষা',
+                'secondary': 'মাধ্যমিক',
+                'school': 'স্কুল',
+                'village': 'গ্রাম',
+                'district': 'জেলা',
+                'failure': 'ব্যর্থতা',
+                'attempt': 'চেষ্টা',
+                'board': 'বোর্ড',
+                'education': 'শিক্ষা',
+                'confidence': 'আত্মবিশ্বাস',
+                'success': 'সাফল্য',
+                'subjects': 'বিষয়',
+                'teachers': 'শিক্ষক',
+                'mother': 'মা',
+                'father': 'পিতা',
+                'uncle': 'কাকা',
+                'members': 'সদস্য',
+                'brought': 'বড় করেছেন',
+                'tomb': 'সমাধি',
+                'humayun': 'হুমায়ুন',
+                'emperor': 'সম্রাট',
+                'persian': 'পারস্য',
+                'architect': 'স্থপতি',
+                'instructions': 'নির্দেশ',
+                'widow': 'বিধবা',
+                'garden': 'বাগান',
+                'sub-continent': 'উপমহাদেশ',
+                'influence': 'প্রভাব',
+                'architecture': 'স্থাপত্য',
+                'graves': 'কবর',
+                'dormitory': 'শয়নকক্ষ',
+                'protected': 'সুরক্ষিত',
+                'monument': 'স্মৃতিসৌধ',
+                'defacing': 'বিকৃতি',
+                'heritage': 'ঐতিহ্য',
+                'restoration': 'পুনরুদ্ধার',
+                'collaboration': 'সহযোগিতা',
+                'archaeological': 'প্রত্নতাত্ত্বিক',
+                'revitalise': 'পুনর্জীবিত',
+                'acre': 'একর',
+                'shrine': 'মাজার',
+                'sufi': 'সুফি',
+                'saint': 'সন্ত',
+                'auspicious': 'শুভ',
+                'buried': 'সমাধিস্থ',
+                'challenge': 'চ্যালেঞ্জ',
+                'magician': 'জাদুকর',
+                'groundnut': 'চিনাবাদাম',
+                'philanthropic': 'পরোপকারী',
+                'sovereign': 'স্বর্ণমুদ্রা',
+                'wretched': 'হতভাগ্য',
+                'beggar': 'ভিক্ষুক',
+                'colonel': 'কর্নেল',
+                'meticulous': 'সূক্ষ্ম',
+                'scar': 'দাগ',
+                'maiden': 'কুমারী',
+                'bride': 'বধূ',
+                'optimistic': 'আশাবাদী',
+                'salvation': 'মুক্তি',
+                'enlightenment': 'আলোকপ্রাপ্তি',
+                'patriarchy': 'পুরুষতন্ত্র',
+                'matrimony': 'বিবাহ',
+                'anarchy': 'নৈরাজ্য',
+                'democracy': 'গণতন্ত্র',
+                'spontaneous': 'স্বতঃস্ফূর্ত',
+                'majestic': 'মহিমান্বিত',
+                'pathetic': 'করুণ',
+                'crafty': 'ধূর্ত',
+                'venetian': 'ভেনিসীয়',
+                'senator': 'সিনেটর',
+                'cyprus': 'সাইপ্রাস',
+                'medicine': 'ঔষধ',
+                'fickle': 'চঞ্চল',
+                'submissive': 'বাধ্য',
+                'ambitious': 'উচ্চাকাঙ্ক্ষী',
+                'murderer': 'খুনি',
+                'manipulate': 'কারচুপি করা',
+                'suspicion': 'সন্দেহ',
+                'betray': 'বিশ্বাসঘাতকতা',
+                'lioness': 'সিংহী',
+                'delicious': 'সুস্বাদু',
+                'briskly': 'দ্রুত',
+                'swiftly': 'তাড়াতাড়ি',
+                'rapidly': 'দ্রুতগতিতে',
+                'hastily': 'তাড়াহুড়ো করে',
+                'monotonous': 'একঘেয়ে',
+                'gleaming': 'চকচকে',
+                'sparkling': 'ঝলমলে',
+                'burden': 'বোঝা',
+                'celestial': 'স্বর্গীয়',
+                'phenomena': 'ঘটনা',
+                'glittering': 'ঝকঝকে',
+                'smokeless': 'ধূমপানহীন',
+                'smoggy': 'কুয়াশাচ্ছন্ন',
+                'pollution': 'দূষণ',
+                'free': 'মুক্ত',
+                'year': 'বছর',
+                'month': 'মাস',
+                'week': 'সপ্তাহ',
+                'day': 'দিন',
+                'night': 'রাত',
+                'time': 'সময়',
+                'people': 'মানুষ',
+                'world': 'বিশ্ব'
+            };
+
+            // ---------- WORD MEANING FUNCTION ----------
+            function showMeaning(word, el) {
+                // Remove any existing meaning badge from this question
+                const parent = el.parentElement;
+                const old = parent.querySelector('.meaning-badge');
+                if (old) old.remove();
+
+                const lower = word.toLowerCase().trim();
+                // Remove punctuation
+                const cleanWord = lower.replace(/[.,;:!?'"()\-]/g, '');
+
+                let meaning = dict[cleanWord];
+                if (!meaning) {
+                    // Try partial match (first 4 letters)
+                    for (let key in dict) {
+                        if (key.startsWith(cleanWord.substring(0, 4)) && cleanWord.length > 3) {
+                            meaning = dict[key];
+                            break;
+                        }
+                    }
+                }
+
+                if (meaning) {
+                    const badge = document.createElement('span');
+                    badge.className = 'meaning-badge';
+                    badge.textContent = 'বাংলা: ' + meaning;
+                    // Insert after the clicked word
+                    const range = window.getSelection().getRangeAt(0);
+                    if (range.startContainer.parentElement === el) {
+                        // If selection is inside the element, insert near cursor
+                        const textNode = range.startContainer;
+                        if (textNode.nodeType === 3) {
+                            const offset = range.startOffset;
+                            const before = textNode.textContent.substring(0, offset);
+                            const after = textNode.textContent.substring(offset);
+                            // We can't easily insert HTML in text node, so append badge to parent
+                            el.appendChild(badge);
+                        } else {
+                            el.appendChild(badge);
+                        }
+                    } else {
+                        el.appendChild(badge);
+                    }
+                    // Auto remove after 5 seconds
+                    setTimeout(() => {
+                        if (badge.parentElement) badge.remove();
+                    }, 5000);
+                } else {
+                    // Fallback: show a "not found" message briefly
+                    const badge = document.createElement('span');
+                    badge.className = 'meaning-badge';
+                    badge.textContent = 'অর্থ খুঁজুন';
+                    el.appendChild(badge);
+                    setTimeout(() => {
+                        if (badge.parentElement) badge.remove();
+                    }, 2500);
+                }
+            }
+
+            // ---------- EXAM DATA ----------
+            const Q = {
+                s11prose: [
+                    { q: 'The astrologer transacted his business with the light of a ________.', opts: ['hissing gas lamp', 'flare',
+                            'cycle lamp', 'steel lamp'
+                        ], ans: 'flare' },
+                    { q: '"Count them. One man gave all that." — What amount of money was counted by them?',
+                        opts: ['Twelve and an annas', 'Twenty and a half annas', 'Twenty and five annas',
+                            'Twelve and a half annas'
+                        ], ans: 'Twelve and a half annas' },
+                    { q: 'Assertion : Guru Nayak was gratified to hear that his attacker was crushed under a lorry. Reason : His sense of revenge was satisfied.',
+                        opts: ['Assertion true but reason false', 'Assertion false but reason true',
+                            'Both assertion and reason true', 'Assertion does not match with reason'
+                        ], ans: 'Both assertion and reason true' },
+                    { q: 'What agitated the semi-darkness of the park?', opts: ['hooting of cars',
+                            'swearing of jutka drivers', 'babble of crowd', 'all of these'
+                        ], ans: 'all of these' },
+                    { q: 'Nivedita has a sudden realisation that religions were only—', opts: ['literature', 'stories',
+                            'languages', 'communications'
+                        ], ans: 'languages' },
+                    { q: 'Choose the true statement among the following.', opts: ['To Swamiji Gods were mere symbols',
+                            'Swamiji thought Gods as forms seen by Bhaktas', 'Swamiji believed in Vedanta',
+                            'Sri Ramakrishna knew about Swamiji\'s Vedantic Belief'
+                        ], ans: 'Swamiji believed in Vedanta' },
+                    { q: '"I believe that She guides me in every little thing I do," — The word \'She\' here refers to—',
+                        opts: ['Mother Kali', 'Sister Nivedita', 'Maa Sarada', 'Mother Teresa'], ans: 'Mother Kali' },
+                    { q: 'At Pawan the narrator observed the reflection of brilliant light in the water of a—',
+                        opts: ['tank', 'river', 'lake', 'stream'], ans: 'tank' },
+                    { q: 'Swamiji bathed in the ice-cold water of _____ streams on the second day.', opts: ['three',
+                            'four', 'five', 'many'
+                        ], ans: 'four' },
+                    { q: 'Arrange sentences in proper order: (i) camp-fire made of juniper (ii) servants travel for fuel (iii) camp pitched in pine-wood (iv) tent set beside frozen river',
+                        opts: ['(iii),(iv),(i),(ii)', '(i),(ii),(iii),(iv)', '(iii),(iv),(ii),(i)',
+                            '(iv),(iii),(ii),(i)'
+                        ], ans: '(iii),(iv),(ii),(i)' }
+                ],
+                s11verse: [
+                    { q: '"Never did sun more beautifully steep." — Here \'steep\' means ________.', opts: ['Overspread',
+                            'look', 'set', 'rise'
+                        ], ans: 'Overspread' },
+                    { q: '"And all that mighty heart is lying still!" — The mighty heart is lying still because—',
+                        opts: ['human activities not yet started', 'merry birds silent', 'river gliding rapidly',
+                            'lovely houses calm'
+                        ], ans: 'human activities not yet started' },
+                    { q: 'Ships, towers, domes, theatres and temples are instances of ________.', opts: ['natural objects',
+                            'celestial objects', 'natural phenomena', 'man-made objects'
+                        ], ans: 'man-made objects' },
+                    { q: 'The city wears like a garment of the beauty of—', opts: ['morning', 'evening', 'river',
+                            'sunlight'
+                        ], ans: 'morning' },
+                    { q: '\'Silver and blue coloured bangles,\' are compared to the—', opts: ['rainbow-tinted circles',
+                            'radiant leaves', 'mountain mist', 'bloom that cleaves'
+                        ], ans: 'mountain mist' },
+                    { q: 'The colour suitable for a middle-aged woman is—', opts: ['reddish yellow', 'rainbow colour',
+                            'silver and blue', 'purple and gold'
+                        ], ans: 'purple and gold' },
+                    { q: 'Choose true statement: (i) monotonous load (ii) shining loads (iii) gleaning burdens (iv) sparkling loads',
+                        opts: ['(ii),(iii)', '(ii)', '(i),(iv)', '(iv)'], ans: '(ii),(iii)' },
+                    { q: 'Match: Tide / Revelation / Darkness / Birds', opts: ['(i)D,(ii)A,(iii)B,(iv)C',
+                            '(i)C,(ii)D,(iii)A,(iv)B', '(i)B,(ii)C,(iii)A,(iv)D', '(i)B,(ii)A,(iii)D,(iv)C'
+                        ], ans: '(i)B,(ii)A,(iii)D,(iv)C' },
+                    { q: 'The poet uses \'widening gyre\' because—', opts: ['represents powerful leader',
+                            'describes golden past', 'depicts rise of powerful king',
+                            'describes breakdown of social norms'
+                        ], ans: 'describes breakdown of social norms' },
+                    { q: 'When does the poet see the troubling sight?', opts: ['After watching falcon',
+                            'After seeing blood-dimmed tide', 'After uttering \'The Second Coming\'',
+                            'After observing slouching beast'
+                        ], ans: 'After uttering \'The Second Coming\'' }
+                ],
+                s11rapid: [
+                    { q: '"I hope you don\'t mind the open window", said Mrs. Sappleton ________.', opts: ['briskly',
+                            'swiftly', 'rapidly', 'hastily'
+                        ], ans: 'briskly' },
+                    { q: 'What would happen if Senior Duke would not face adversities?', opts: ['not connected with nature',
+                            'not know struggle for existence', 'not face cough and cold', 'not feel pain of life'
+                        ], ans: 'not know struggle for existence' },
+                    { q: 'Trees shaking, smell of rain, hawker, sparrows twittering — who saw these from where?',
+                        opts: ['Mr. Mallard from railway station', 'Mrs. Mallard from her room',
+                            'Mrs. Mallard from front gate', 'Mr. Mallard from open square'
+                        ], ans: 'Mrs. Mallard from her room' },
+                    { q: 'Complete chart: Adam gave money to Orlando → requested to be servant → Orlando pleased → ?',
+                        opts: ['He promised to take care of him', 'He stopped to talk',
+                            'He requested Orlando to give money', 'He went away'
+                        ], ans: 'He promised to take care of him' },
+                    { q: 'What does Josephine believe Louise is doing behind closed door?', opts: ['Nothing',
+                            'Making herself ill', 'Looking at photographs', 'Killing herself'
+                        ], ans: 'Making herself ill' },
+                    { q: 'True/False order: (i) story open ended (ii) feminine view (iii) suicide (iv) Brently symbolic',
+                        opts: ['(i)F,(ii)T,(iii)F,(iv)T', '(i)T,(ii)F,(iii)T,(iv)F', '(i)F,(ii)T,(iii)F,(iv)T',
+                            '(i)T,(ii)F,(iii)T,(iv)F'
+                        ], ans: '(i)F,(ii)T,(iii)F,(iv)T' },
+                    { q: '"She arose ... opened the door to sister\'s importunities." What if she didn\'t arise?',
+                        opts: ['sister terrified', 'sister fainted', 'sister left elsewhere', 'sister screamed'],
+                        ans: 'sister terrified' },
+                    { q: 'What does Framton know about Mrs. Sappleton?', opts: ['Her tragedy', 'Her family history',
+                            'Only name and address', 'Her hobbies'
+                        ], ans: 'Only name and address' },
+                    { q: 'Correct order: (i) Nuttel migrated (ii) met Mrs Sappleton (iii) Vera told story (iv) met Vera',
+                        opts: ['(i),(iv),(iii),(ii)', '(i),(iii),(ii),(iv)', '(iv),(i),(iii),(ii)',
+                            '(iii),(i),(iv),(ii)'
+                        ], ans: '(i),(iv),(iii),(ii)' },
+                    { q: 'Rosalind disguised as male and called herself—', opts: ['Aliena', 'Sir Rowland de Boys',
+                            'Ganymede', 'Fredrick'
+                        ], ans: 'Ganymede' }
+                ],
+                s11grammar: [
+                    { q: 'The nuts-vendor blew out his flare. (passive)', opts: [
+                            'His fare was blown out by the nuts-vendor.',
+                            'The vendor was blown out by the flare.', 'The nuts were blown out by vendor.',
+                            'The flare was blown out by the nuts.'
+                        ], ans: 'The flare was blown out by the nuts.' },
+                    { q: 'It was a remarkable place in many ways. (complex)', opts: [
+                            'It was a place which was remarkable in many ways.',
+                            'It was that a remarkable place...', 'It was a place as it was remarkable...', 'None'
+                        ], ans: 'It was a place which was remarkable in many ways.' },
+                    { q: 'Leaving Islamabad, we caught up somewhere with the pilgrimage. (phrasal verb meaning)',
+                        opts: ['seized', 'met', 'arrested', 'argued'], ans: 'met' },
+                    { q: 'Never did sun more beautifully ________. (correct verb)', opts: ['steeped', 'steep',
+                            'steepling', 'was steeped'
+                        ], ans: 'steep' },
+                    { q: 'For she who has journeyed ________ life midway. (preposition)', opts: ['in', 'among',
+                            'through', 'between'
+                        ], ans: 'through' }
+                ],
+                s11unseen: [
+                    { q: 'Shankar and Alvarez were sleeping in a ________.', opts: ['house', 'room', 'jungle hut',
+                            'tent'
+                        ], ans: 'tent' },
+                    { q: 'Shankar was warned as he was going outside—', opts: ['without his riffle', 'without his torch',
+                            'without Alvarez', 'without anyone else'
+                        ], ans: 'without his riffle' },
+                    { q: 'The sight defied logic to Shankar as—', opts: ['animals running towards hill without reason',
+                            'such thing not happen', 'animals panic-stricken',
+                            'animals had no reason to run at night'
+                        ], ans: 'animals running towards hill without reason' },
+                    { q: 'The bushes and small plants were ________ under the feet.', opts: ['squeezed', 'trampled',
+                            'shaken', 'broken'
+                        ], ans: 'trampled' },
+                    { q: 'How was the night described?', opts: ['starlit', 'intensely dark', 'faintly dark', 'moonlit'],
+                        ans: 'intensely dark' }
+                ],
+                s12prose: [
+                    { q: 'How is Amarnath remarkable for ages to the people?', opts: ['its simplicity',
+                            'closeness and simplicity of nature', 'Heavenly beauty', 'serene natural objects'
+                        ], ans: 'closeness and simplicity of nature' },
+                    { q: 'What was the ancestral profession of the astrologer\'s forefathers?', opts: ['Service',
+                            'Business', 'Farming', 'Dancing'
+                        ], ans: 'Farming' },
+                    { q: 'According to Trevor, the model beggar looks splendid in his—', opts: ['ragged clothes',
+                            'appearance', 'manner', 'behaviour'
+                        ], ans: 'ragged clothes' },
+                    { q: 'Assertion: simple client took him to be prophetic. Reason: sharp gleam in eyes.',
+                        opts: ['assertion true reason false', 'both true', 'assertion false reason true', 'both false'],
+                        ans: 'both true' },
+                    { q: 'The Swami imagined a group of ________ had suddenly come upon ________.', opts: ['Pilgrims, Mahadev',
+                            'Bhaktas, Shiva', 'Shepherds, Mahadev', 'Monks, Kali'
+                        ], ans: 'Shepherds, Mahadev' },
+                    { q: 'The astrologer advised Guru Nayak ________.', opts: ['take next bus and be gone',
+                            'take next train and be gone', 'stay in his house', 'not to travel at night'
+                        ], ans: 'take next train and be gone' },
+                    { q: 'True/False: (i) Hughie loved Laura (ii) Alan loved Laura (iii) beggar was Baron Hausberg (iv) beggar did not wear ragged cloth',
+                        opts: ['(i)T,(ii)F,(iii)F,(iv)T', '(i)T,(ii)F,(iii)T,(iv)F', '(i)F,(ii)T,(iii)T,(iv)F',
+                            '(i)T,(ii)T,(iii)F,(iv)F'
+                        ], ans: '(i)T,(ii)F,(iii)T,(iv)F' },
+                    { q: 'Correct order: (i) wife demanded explanation (ii) astrologer reached home midnight (iii) "Twelve and half annas" (iv) flung coins and said count',
+                        opts: ['(iv),(iii),(ii),(i)', '(iii),(i),(ii),(iv)', '(ii),(i),(iv),(iii)',
+                            '(ii),(iii),(iv),(i)'
+                        ], ans: '(ii),(i),(iv),(iii)' },
+                    { q: 'Laura\'s father had lost his temper and ________.', opts: ['job', 'wife', 'family',
+                            'digestion'
+                        ], ans: 'digestion' },
+                    { q: 'Which statement true? (i) halted at Pahalgam for Ekadasi (ii) halted week only (iii) halted to observe pilgrims (iv) village of shepherds',
+                        opts: ['(i),(ii)', '(i),(iv)', '(i),(iii)', '(ii),(iii)'], ans: '(i),(iv)' }
+                ],
+                s12verse: [
+                    { q: 'Human being : Garment :: The city of London : ?', opts: ['Fields and sky', 'Sunlight',
+                            'Beauty of morning', 'Majestic garment'
+                        ], ans: 'Beauty of morning' },
+                    { q: 'Some bangles are like ________ of sunlit ________.', opts: ['fields, sunflower', 'picture, morn',
+                            'fields, corn', 'scene, landscape'
+                        ], ans: 'fields, corn' },
+                    { q: 'Assertion: houses seem asleep. Reason: mighty heart lying still.', opts: [
+                            'assertion incorrect reason correct', 'both correct and reason explains',
+                            'both correct but reason not explanation', 'assertion correct reason incorrect'
+                        ], ans: 'both correct and reason explains' },
+                    { q: 'The \'falcon\' stands for—', opts: ['dark age', 'Christian Civilisation',
+                            'bestial civilisation', 'none'
+                        ], ans: 'Christian Civilisation' },
+                    { q: 'All bright and glittering in the ________ air.', opts: ['Smokeless', 'Smoggy', 'Smooth',
+                            'Pollution free'
+                        ], ans: 'Smokeless' },
+                    { q: 'Match: Tear / Leaves / Tokens / Wives', opts: ['(i)A,(ii)D,(iii)C,(iv)D',
+                            '(i)B,(ii)C,(iii)A,(iv)D', '(i)B,(ii)C,(iii)A,(iv)B', '(i)D,(ii)C,(iii)B,(iv)A'
+                        ], ans: '(i)B,(ii)C,(iii)A,(iv)D' },
+                    { q: 'Mere ________ is loosed upon the world.', opts: ['Patriarchy', 'Matrimony', 'Anarchy',
+                            'Democracy'
+                        ], ans: 'Anarchy' },
+                    { q: '"Dull would he be of soul" — Here \'dull\' means', opts: ['unintelligent', 'bored',
+                            'devoid of sense of beauty', 'monotonous'
+                        ], ans: 'devoid of sense of beauty' },
+                    { q: 'Main theme of "The Bangle Sellers" is—', opts: ['Indian freedom struggle',
+                            'Celebration of Indian womanhood', 'Celebration of colour', 'Man and nature'
+                        ], ans: 'Celebration of Indian womanhood' },
+                    { q: 'The terrifying beast rises out of', opts: ['sandy desert', 'ocean', 'cave', 'none'],
+                        ans: 'sandy desert' }
+                ],
+                s12rapid: [
+                    { q: 'Lady Macbeth was a/an', opts: ['good woman', 'evil-minded and ambitious', 'shy woman',
+                            'clever woman'
+                        ], ans: 'evil-minded and ambitious' },
+                    { q: 'Who caused the castle bell to ring?', opts: ['Montano', 'Iago', 'Cassio', 'Brabantio'],
+                        ans: 'Iago' },
+                    { q: 'False statement: (i) Macbeth Duncan\'s close relative (ii) brave General (iii) Macduff\'s cousin (iv) high in opinion',
+                        opts: ['(i)', '(iii)', '(iv)', '(ii)'], ans: '(iii)' },
+                    { q: 'Orlando was the youngest son of—', opts: ['Adam', 'Sir Rowland de Boys', 'Frederick',
+                            'Ferdinand'
+                        ], ans: 'Sir Rowland de Boys' },
+                    { q: 'Macbeth reacted when he saw Banquo\'s ghost:', opts: ['remained calm',
+                            'panicked and spoke to ghost', 'accused Lady Macbeth', 'confessed murder'
+                        ], ans: 'panicked and spoke to ghost' },
+                    { q: 'Othello was summoned before the court—', opts: ['for noble employment', 'as culprit',
+                            'both a and b', 'none'
+                        ], ans: 'both a and b' },
+                    { q: 'Match: Rosalind\'s cousin / Orlando\'s elder brother / usurper / enemy of Frederick',
+                        opts: ['(i)B,(ii)C,(iii)D,(iv)A', '(i)B,(ii)C,(iii)A,(iv)D', '(i)C,(ii)B,(iii)A,(iv)D',
+                            '(i)A,(ii)D,(iii)C,(iv)B'
+                        ], ans: '(i)B,(ii)C,(iii)D,(iv)A' },
+                    { q: 'Diagram: fickle minded, submissive, ambitious, murderer → center?', opts: ['Duncan', 'Macbeth',
+                            'Macduff', 'Banquo'
+                        ], ans: 'Macbeth' },
+                    { q: 'How did Iago manipulate Othello?', opts: ['openly accusing Desdemona',
+                            'praising Cassio\'s honesty', 'subtly sowing suspicion', 'convincing Desdemona'
+                        ], ans: 'subtly sowing suspicion' },
+                    { q: 'Who accompanied Orlando when he escaped?', opts: ['Oliver', 'Frederick', 'Rosalind', 'Adam'],
+                        ans: 'Adam' }
+                ],
+                s12grammar: [
+                    { q: 'Dull would he be of soul who could pass by ... (identify underlined clause)',
+                        opts: ['Noun clause', 'Adjective clause', 'Adverbial clause', 'Main clause'],
+                        ans: 'Adjective clause' },
+                    { q: 'The nuts-vendor blew out his flare. (phrasal verb meaning)', opts: ['Extinguished', 'Defeated',
+                            'Became exhausted', 'Reduced'
+                        ], ans: 'Extinguished' },
+                    { q: 'His father had bequeathed him his cavalry sword ... (change voice)',
+                        opts: ['He had been bequeathed ... by his father.', 'He was bequeathed ...',
+                            'He had bequeathed ...', 'He bequeathed ...'
+                        ], ans: 'He had been bequeathed ... by his father.' },
+                    { q: 'The mighty heart ________ still.', opts: ['has been lied', 'is lying', 'lie', 'are lying'],
+                        ans: 'is lying' },
+                    { q: 'The best lack conviction. — passive voice', opts: ['Conviction was lacked by the best.',
+                            'Conviction has been lacked...', 'Conviction is lacked by the best.',
+                            'Conviction may be lacked...'
+                        ], ans: 'Conviction is lacked by the best.' }
+                ],
+                s12unseen: [
+                    { q: 'Shiv Charan Yadav has appeared in Secondary Examination from—', opts: ['West Bengal Board',
+                            'Bihar Board', 'Rajasthan Board', 'Delhi Board'
+                        ], ans: 'Rajasthan Board' },
+                    { q: 'Shiv Charan got success after his—', opts: ['40th attempt', '44th attempt', '46th attempt',
+                            '47th attempt'
+                        ], ans: '47th attempt' },
+                    { q: 'Shiv Charan lost his mother only at the age of—', opts: ['ten years', 'two years',
+                            'two months', 'ten months'
+                        ], ans: 'two months' },
+                    { q: 'Yadav has taken classes from—', opts: ['Coaching centre', 'School teachers', 'relatives',
+                            'father'
+                        ], ans: 'School teachers' },
+                    { q: 'The word \'exuded\' means—', opts: ['discharged', 'captivated', 'contented', 'excused'],
+                        ans: 'discharged' }
+                ],
+                s13prose: [
+                    { q: '\'Challenge is challenge\'. — The speaker was—', opts: ['the stranger', 'the astrologer',
+                            'the magician', 'the groundnut seller'
+                        ], ans: 'the stranger' },
+                    { q: 'Assertion: Swamiji\'s orders to remove shoes in Kalighat temple. Reason: respect for worship.',
+                        opts: ['both true reason explains', 'both true reason not explains',
+                            'assertion correct reason incorrect', 'assertion incorrect reason correct'
+                        ], ans: 'both true reason explains' },
+                    { q: '________ dedicated Swami Vivekananda to Her.', opts: ['Kali', 'Sister Nivedita',
+                            'Sri Ramakrishna', 'Shiva'
+                        ], ans: 'Sister Nivedita' },
+                    { q: 'Match: astrologer charged / Guru Nayak gave / astrologer returned / pact settled',
+                        opts: ['(i)A,(ii)B,(iii)C,(iv)D', '(i)B,(ii)C,(iii)A,(iv)D', '(i)C,(ii)B,(iii)A,(iv)D',
+                            '(i)D,(ii)C,(iii)A,(iv)B'
+                        ], ans: '(i)B,(ii)C,(iii)A,(iv)D' },
+                    { q: 'Correct order: (i) beggar on raised platform (ii) wizened old man (iii) Hughie found Trevor painting (iv) wrinkled parchment',
+                        opts: ['(i),(iii),(iv),(ii)', '(iii),(ii),(i),(iv)', '(ii),(iii),(iv),(i)',
+                            '(iii),(i),(ii),(iv)'
+                        ], ans: '(iii),(i),(ii),(iv)' },
+                    { q: 'Thing that reflects philanthropic spirit:', opts: ['meeting model beggar',
+                            'sympathy for wretched', 'give sovereign to helpless', 'none'
+                        ], ans: 'give sovereign to helpless' },
+                    { q: 'Diagram: Brahman/Impersonal + Mother/Personal → overlapping region represents?',
+                        opts: ['contrast', 'ultimate oneness', 'rejection', 'division'], ans: 'ultimate oneness' },
+                    { q: 'Correct order: (i) astrologer reached midnight (ii) gave sacred ash (iii) addressed as Guru Nayak (iv) stranger gone after coins',
+                        opts: ['(ii),(i),(iv),(iii)', '(iii),(ii),(i),(iv)', '(ii),(iii),(i),(iv)',
+                            '(iii),(ii),(iv),(i)'
+                        ], ans: '(iii),(ii),(iv),(i)' },
+                    { q: 'True statement: (i) Colonel did not like Hughie (ii) not allow (iii) fond (iv) meticulous',
+                        opts: ['(i)', '(ii)', '(iii)', '(iv)'], ans: '(iii)' },
+                    { q: 'The stranger bared his chest to show the ________.', opts: ['marks', 'scar', 'symbol', 'name'],
+                        ans: 'scar' }
+                ],
+                s13verse: [
+                    { q: '\'The Second Coming\' was written after ________.', opts: ['French Revolution', 'World War I',
+                            'World War II', 'Industrial Revolution'
+                        ], ans: 'World War I' },
+                    { q: 'Maiden\'s wrist → ? → middle aged woman', opts: ['Child of school going age',
+                            'Old and wrinkled woman', 'Bride', 'none'
+                        ], ans: 'Bride' },
+                    { q: 'Match: sun / pass by without noticing / city / houses', opts: ['(i)A,(ii)D,(iii)C,(iv)B',
+                            '(i)A,(ii)B,(iii)D,(iv)C', '(i)D,(ii)C,(iii)B,(iv)A', '(i)B,(ii)A,(iii)D,(iv)C'
+                        ], ans: '(i)B,(ii)A,(iii)D,(iv)C' },
+                    { q: 'Assertion: title refers literal return. Reason: poem optimistic.', opts: [
+                            'both true reason explains', 'both true reason not explains',
+                            'assertion false reason true', 'assertion true reason false'
+                        ], ans: 'assertion true reason false' },
+                    { q: '"Some are flushed like the buds that dream." — buds refer to—', opts: ['maidens', 'buds',
+                            'married woman', 'older woman'
+                        ], ans: 'maidens' },
+                    { q: 'The poem \'The Bangle Sellers\' is written by—', opts: ['R.K. Narayan', 'William Wordsworth',
+                            'W.B. Yeats', 'Sarojini Naidu'
+                        ], ans: 'Sarojini Naidu' },
+                    { q: '"The centre can not hold" Why?', opts: ['new religion risen', 'personal despair',
+                            'traditional values collapsed', 'process of enlightenment'
+                        ], ans: 'traditional values collapsed' },
+                    { q: '"Earth has not anything to show more fair" — poet talks about—', opts: ['London early morning',
+                            'London afternoon', 'river Thames', 'houses asleep'
+                        ], ans: 'London early morning' },
+                    { q: 'Assertion: speaker thinks view boring. Reason: uses fair, beautiful.', opts: [
+                            'both true reason explains', 'both true reason not explains',
+                            'assertion true reason false', 'assertion false reason true'
+                        ], ans: 'assertion false reason true' },
+                    { q: 'London has a ________ beauty.', opts: ['spontaneous', 'majestic', 'careless', 'pathetic'],
+                        ans: 'majestic' }
+                ],
+                s13rapid: [
+                    { q: '"She sat with her head thrown back..." What if she never got news of husband\'s death?',
+                        opts: ['never felt free', 'never expressed herself', 'would have died', 'gone away'],
+                        ans: 'never felt free' },
+                    { q: 'In the forest, Rosalind and Aliena were surprised to see—', opts: ['Celia\'s name carved',
+                            'Rosalind\'s name carved', 'Aliena\'s name carved', 'Ganymede\'s name carved'
+                        ], ans: 'Rosalind\'s name carved' },
+                    { q: 'Best expresses theme of "The Story of an Hour"?', opts: ['unhappy marriages common',
+                            '19th century marriages oppressive', 'joy in death immoral', 'society punished women'
+                        ], ans: '19th century marriages oppressive' },
+                    { q: 'True statement: (i) banished duke lawful (ii) alone took shelter (iii) usurper younger brother (iv) France united',
+                        opts: ['(i)', '(ii),(iii)', '(i),(iii)', '(iii),(iv)'], ans: '(i),(iii)' },
+                    { q: 'Desdemona\'s handkerchief was stolen by—', opts: ['Othello', 'Iago', 'Iago\'s wife', 'Cassio'],
+                        ans: 'Iago\'s wife' },
+                    { q: 'Correct order: (i) Othello Moor (ii) brave soldier (iii) raised to General (iv) heroic against Turks',
+                        opts: ['(ii),(i),(iv),(iii)', '(i),(ii),(iv),(iii)', '(iv),(i),(ii),(iii)',
+                            '(iii),(ii),(i),(iv)'
+                        ], ans: '(i),(ii),(iv),(iii)' },
+                    { q: 'True/False: (i) Brabantio rich senator (ii) Cassio young Venetian (iii) Iago crafty (iv) Cyprus medicine',
+                        opts: ['(i)F,(ii)F,(iii)T,(iv)F', '(i)T,(ii)F,(iii)T,(iv)T', '(i)T,(ii)F,(iii)T,(iv)F',
+                            '(i)T,(ii)F,(iii)T,(iv)T'
+                        ], ans: '(i)T,(ii)F,(iii)T,(iv)F' },
+                    { q: 'Orlando saved Oliver from—', opts: ['fire', 'snake and tiger', 'lioness',
+                            'snake and lioness'
+                        ], ans: 'lioness' },
+                    { q: 'The delicious ________ of rain was in the air.', opts: ['air', 'sound', 'wind', 'breath'],
+                        ans: 'breath' },
+                    { q: 'Assertion: "Go away, I am not making myself ill." Reason: ?', opts: ['making room of her own',
+                            'offended when sister knocked', 'trying to commit suicide', 'wanted to see movie'
+                        ], ans: 'offended when sister knocked' }
+                ],
+                s13grammar: [
+                    { q: 'He flung the coins ________ her and said, "Count them..."', opts: ['to', 'at', 'of', 'on'],
+                        ans: 'at' },
+                    { q: 'He ________ a roar of laughter.', opts: ['brought into', 'stroke into', 'burst into',
+                            'cried into'
+                        ], ans: 'burst into' },
+                    { q: 'Bangle seller\'s are we who bear our shining loads. (clause)', opts: ['subordinate noun',
+                            'subordinate adjective', 'subordinate adverbial', 'principal'
+                        ], ans: 'subordinate adjective' },
+                    { q: 'After he got to know Hughie better, he liked him quite. (simple)',
+                        opts: ['He liked him quite to know Hughie better.',
+                            'Getting to know Hughie better, he liked him quite.',
+                            'He liked him well and got to know Hughie better.',
+                            'He got to know better and liked Hughie well.'
+                        ], ans: 'Getting to know Hughie better, he liked him quite.' },
+                    { q: 'The falcon cannot hear the falconer. (voice)',
+                        opts: ['The falconer is not heard by the falcon.',
+                            'The falconer cannot be heard to the falcon.',
+                            'The falconer cannot be heard by the falcon.', 'The falconer can hear the falcon.'
+                        ], ans: 'The falconer cannot be heard by the falcon.' }
+                ],
+                s13unseen: [
+                    { q: '________ was the second Mughal Emperor.', opts: ['Akbar', 'Humayun', 'Babar', 'Jahangir'],
+                        ans: 'Humayun' },
+                    { q: 'The oldest garden tomb in India is—', opts: ['Hamida Banu\'s tomb', 'Akbar\'s tomb',
+                            'Mirak Mirza\'s tomb', 'Humayun\'s tomb'
+                        ], ans: 'Humayun\'s tomb' },
+                    { q: 'Statement A: constructed by Mirak Mirza Ghiyath. Statement B: built in 15th century.',
+                        opts: ['A contradicts B', 'B is reason of A', 'A true but B false', 'A and B independent'],
+                        ans: 'A true but B false' },
+                    { q: 'Instructions to build Humayun\'s tomb given by—', opts: ['Mirak Mirza', 'Jahandar Shah',
+                            'Hamida Banu Begum', 'Dara Shikoh'
+                        ], ans: 'Hamida Banu Begum' },
+                    { q: 'Humayun\'s tomb is located near—', opts: ['a market', 'another tomb', 'shrine of a Sufi saint',
+                            'a prison'
+                        ], ans: 'shrine of a Sufi saint' }
+                ]
+            };
+
+            // ----- RENDER WITH RADIO BUTTONS + WORD CLICK -----
+            let totalCorrect = 0;
+            const totalQuestions = 120;
+
+            function updateScore() {
+                document.getElementById('globalScore').textContent = totalCorrect + ' / ' + totalQuestions;
+            }
+
+            function renderSet(sectionId, data) {
+                const container = document.getElementById(sectionId);
+                if (!container) return;
+                container.innerHTML = '';
+                data.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'q-item';
+                    const label = document.createElement('span');
+                    label.className = 'q-label';
+                    label.textContent = (idx + 1) + '.';
+                    const text = document.createElement('span');
+                    text.className = 'q-text';
+                    text.textContent = item.q;
+
+                    // --- WORD CLICK HANDLER ---
+                    text.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        // Get the selected word
+                        const selection = window.getSelection();
+                        const word = selection.toString().trim();
+                        if (word && word.length > 1) {
+                            // Remove any existing meaning badge in this question
+                            const existing = this.parentElement.querySelector('.meaning-badge');
+                            if (existing) existing.remove();
+                            showMeaning(word, this);
+                        }
+                    });
+
+                    // Also support double-click to select word
+                    text.addEventListener('dblclick', function(e) {
+                        e.stopPropagation();
+                        const selection = window.getSelection();
+                        const word = selection.toString().trim();
+                        if (word && word.length > 1) {
+                            const existing = this.parentElement.querySelector('.meaning-badge');
+                            if (existing) existing.remove();
+                            showMeaning(word, this);
+                        }
+                    });
+
+                    const optsDiv = document.createElement('div');
+                    optsDiv.className = 'q-options';
+                    const feedback = document.createElement('div');
+                    feedback.className = 'feedback';
+                    const radioName = 'q_' + sectionId + '_' + idx;
+                    item.opts.forEach((opt) => {
+                        const lbl = document.createElement('label');
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = radioName;
+                        radio.value = opt;
+                        radio.addEventListener('change', function() {
+                            const allRadios = optsDiv.querySelectorAll('input[type="radio"]');
+                            allRadios.forEach(r => r.disabled = true);
+                            const isCorrect = (this.value === item.ans);
+                            if (isCorrect) {
+                                div.classList.add('correct');
+                                feedback.className = 'feedback show correct';
+                                feedback.innerHTML = '✅ Correct!';
+                                totalCorrect++;
+                                spawnParticles('correct', 180);
+                            } else {
+                                div.classList.add('wrong');
+                                feedback.className = 'feedback show wrong';
+                                feedback.innerHTML = '❌ Wrong. Correct answer: <span class="answer-reveal">' +
+                                    item.ans + '</span>';
+                                spawnParticles('wrong', 300);
+                            }
+                            updateScore();
+                        });
+                        lbl.appendChild(radio);
+                        lbl.appendChild(document.createTextNode(opt));
+                        optsDiv.appendChild(lbl);
+                    });
+                    div.appendChild(label);
+                    div.appendChild(text);
+                    div.appendChild(optsDiv);
+                    div.appendChild(feedback);
+                    container.appendChild(div);
+                });
+            }
+
+            // render all
+            renderSet('set11-prose', Q.s11prose);
+            renderSet('set11-verse', Q.s11verse);
+            renderSet('set11-rapid', Q.s11rapid);
+            renderSet('set11-grammar', Q.s11grammar);
+            renderSet('set11-unseen', Q.s11unseen);
+
+            renderSet('set12-prose', Q.s12prose);
+            renderSet('set12-verse', Q.s12verse);
+            renderSet('set12-rapid', Q.s12rapid);
+            renderSet('set12-grammar', Q.s12grammar);
+            renderSet('set12-unseen', Q.s12unseen);
+
+            renderSet('set13-prose', Q.s13prose);
+            renderSet('set13-verse', Q.s13verse);
+            renderSet('set13-rapid', Q.s13rapid);
+            renderSet('set13-grammar', Q.s13grammar);
+            renderSet('set13-unseen', Q.s13unseen);
+
+            // SIDEBAR NAV
+            document.querySelectorAll('.menu-item[data-target]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const target = this.dataset.target;
+                    let el;
+                    if (target === 'set11') el = document.getElementById('set11');
+                    else if (target === 'set12') el = document.getElementById('set12');
+                    else if (target === 'set13') el = document.getElementById('set13');
+                    else {
+                        el = document.getElementById(target);
+                        if (!el) {
+                            const all = document.querySelectorAll('.set-card');
+                            for (let card of all) {
+                                if (card.querySelector('#' + target)) { el = card; break; }
+                            }
+                        }
+                    }
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            console.log('✅ Word meaning feature is working! Click any word in a question to see Bengali meaning.');
+        })();
+    </script>
 </body>
-  </html>
+                                          </html>
