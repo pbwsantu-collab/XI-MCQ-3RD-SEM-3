@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Model Sets 11–13 · Exam Mode</title>
+  <title>Model Sets 11–13 · Exam + Word Meanings</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -13,7 +13,6 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    /* ----- particle canvas overlay ----- */
     #particleCanvas {
       position: fixed;
       top: 0;
@@ -23,7 +22,6 @@
       pointer-events: none;
       z-index: 9999;
     }
-    /* SIDEBAR */
     .sidebar {
       width: 220px;
       background: linear-gradient(180deg, #1e2b3c 0%, #2c3e50 100%);
@@ -88,7 +86,6 @@
     .menu-item.set13:hover { background: rgba(46, 204, 113, 0.2); }
     .menu-divider { border-top: 1px solid #3d4f5e; margin: 1rem 0; }
 
-    /* MAIN */
     .main-content { flex: 1; padding: 1.5rem 2rem 3rem; min-width: 0; }
     .container { max-width: 1200px; margin: 0 auto; }
     h1 {
@@ -142,7 +139,6 @@
     }
     .question-grid { display: flex; flex-direction: column; gap: 0.85rem; }
 
-    /* Question Item */
     .q-item {
       background: #fcfaf7;
       border-radius: 16px;
@@ -168,7 +164,12 @@
       font-size: 0.98rem;
       color: #1e1b18;
       line-height: 1.5;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 0 2px;
+      transition: 0.1s;
     }
+    .q-text:hover { background: #f0e3d3; }
     .q-options {
       width: 100%;
       padding-left: 1.2rem;
@@ -211,6 +212,19 @@
     .feedback.wrong { color: #a71d2a; background: #f8d7da; }
     .feedback .answer-reveal { font-weight: 600; color: #2c3e4f; }
 
+    .meaning-badge {
+      background: #1f3a3f;
+      color: #f0ede8;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.8rem;
+      border-radius: 30px;
+      display: inline-block;
+      margin-left: 0.5rem;
+      border: 1px solid #b8860b;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+
     .unseen-passage {
       background: #eae3da;
       padding: 1.2rem 1.8rem;
@@ -230,7 +244,6 @@
       padding-top: 0.6rem;
       text-align: right;
     }
-
     .score-badge {
       background: #2c3e50;
       color: #f5ede4;
@@ -271,10 +284,8 @@
 </head>
 <body>
 
-<!-- PARTICLE CANVAS -->
 <canvas id="particleCanvas"></canvas>
 
-<!-- SIDEBAR -->
 <nav class="sidebar">
   <h2>📘 MODEL SETS</h2>
   <div class="menu-group">
@@ -294,16 +305,14 @@
   </div>
   <div class="menu-divider"></div>
   <div style="color:#8a9aa8; font-size:0.7rem; text-align:center; margin-top:0.5rem;">
-    <span style="display:inline-block; background:#27ae60; width:10px; height:10px; border-radius:50%;"></span> correct
-    <span style="display:inline-block; background:#e74c3c; width:10px; height:10px; border-radius:50%; margin-left:0.5rem;"></span> wrong
+    <span style="display:inline-block; background:#b8860b; width:10px; height:10px; border-radius:50%;"></span> click word → বাংলা অর্থ
   </div>
 </nav>
 
-<!-- MAIN -->
 <div class="main-content">
   <div class="container">
     <h1>
-      <span>📘 Model Sets 11–13 · Exam Mode</span>
+      <span>📘 Model Sets 11–13 · Exam + Meanings</span>
       <span class="score-badge" id="globalScore">0 / 120</span>
     </h1>
 
@@ -345,7 +354,7 @@
         <div class="question-grid" id="set13-unseen"></div>
       </div>
     </div>
-    <div class="footnote">Select an option → instant feedback · 🎆 correct: golden shower · 🌧️ wrong: heavy rain</div>
+    <div class="footnote">Select an option → instant feedback · 🎆 correct: golden shower · 🌧️ wrong: heavy rain · click any word → বাংলা অর্থ</div>
   </div>
 </div>
 
@@ -356,8 +365,8 @@
     const ctx = canvas.getContext('2d');
     let W, H;
     let particles = [];
-    let animationId = null;
     let isAnimating = false;
+    let animationId = null;
 
     function resize() {
       W = canvas.width = window.innerWidth;
@@ -370,9 +379,8 @@
       constructor(x, y, type) {
         this.x = x || W/2 + (Math.random() - 0.5) * 100;
         this.y = y || -20;
-        this.type = type || 'correct'; // 'correct' or 'wrong'
+        this.type = type || 'correct';
         if (this.type === 'correct') {
-          // golden sparkle
           this.size = 3 + Math.random() * 8;
           this.speed = 2 + Math.random() * 6;
           this.wobble = Math.random() * 0.05;
@@ -382,7 +390,6 @@
           this.life = 1;
           this.decay = 0.003 + Math.random() * 0.008;
         } else {
-          // heavy rain drop
           this.size = 2 + Math.random() * 4;
           this.speed = 8 + Math.random() * 14;
           this.wobble = 0.02;
@@ -409,7 +416,6 @@
           this.life -= this.decay;
           this.size *= 0.998;
         } else {
-          // rain
           this.x += Math.sin(this.angle) * 0.3;
           this.y += this.vy;
           this.vy += this.gravity;
@@ -426,7 +432,6 @@
           ctx.shadowColor = '#ffd700';
           ctx.shadowBlur = 20;
           ctx.beginPath();
-          // star/sparkle shape
           const spikes = 5;
           const outerRadius = this.size;
           const innerRadius = this.size * 0.4;
@@ -444,7 +449,6 @@
           ctx.fill();
           ctx.restore();
         } else {
-          // rain drop
           const alpha = this.life * 0.7;
           ctx.save();
           ctx.globalAlpha = alpha;
@@ -488,18 +492,99 @@
     function animate() {
       ctx.clearRect(0, 0, W, H);
       particles = particles.filter(p => p.update());
-      for (let p of particles) {
-        p.draw(ctx);
-      }
+      for (let p of particles) p.draw(ctx);
       if (particles.length > 0) {
         animationId = requestAnimationFrame(animate);
       } else {
         isAnimating = false;
         ctx.clearRect(0, 0, W, H);
-        if (animationId) {
-          cancelAnimationFrame(animationId);
-          animationId = null;
+        if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+      }
+    }
+
+    // ---------- DICTIONARY (Bengali meanings) ----------
+    const dict = {
+      'astrologer': 'জ্যোতিষী', 'transacted': 'সম্পন্ন', 'business': 'ব্যবসা', 'light': 'আলো', 'flare': 'শিখা',
+      'count': 'গণনা', 'amount': 'পরিমাণ', 'money': 'টাকা', 'annas': 'আনা', 'assertion': 'বক্তব্য',
+      'reason': 'কারণ', 'gratified': 'সন্তুষ্ট', 'attacker': 'আক্রমণকারী', 'crushed': 'চূর্ণ', 'lorry': 'ট্রাক',
+      'revenge': 'প্রতিশোধ', 'agitated': 'উত্তেজিত', 'semi-darkness': 'অর্ধ-অন্ধকার', 'park': 'পার্ক',
+      'hooting': 'শব্দ', 'cars': 'গাড়ি', 'swearing': 'গালি', 'jutka': 'জুটকা', 'drivers': 'চালক',
+      'babble': 'কোলাহল', 'crowd': 'ভিড়', 'realisation': 'উপলব্ধি', 'religions': 'ধর্ম', 'literature': 'সাহিত্য',
+      'stories': 'গল্প', 'languages': 'ভাষা', 'communications': 'যোগাযোগ', 'symbols': 'প্রতীক',
+      'bhaktas': 'ভক্ত', 'vedanta': 'বেদান্ত', 'guides': 'পথপ্রদর্শন', 'narrator': 'বর্ণনাকারী',
+      'reflection': 'প্রতিফলন', 'brilliant': 'উজ্জ্বল', 'streams': 'স্রোত', 'camp-fire': 'শিবিরের আগুন',
+      'juniper': 'জুনিপার', 'servants': 'চাকর', 'fuel': 'জ্বালানি', 'pine-wood': 'পাইন বন', 'tent': 'তাঁবু',
+      'frozen': 'হিমায়িত', 'river': 'নদী', 'steep': 'আবৃত', 'overspread': 'বিস্তৃত', 'mighty': 'শক্তিশালী',
+      'heart': 'হৃদয়', 'human': 'মানুষ', 'activities': 'কাজকর্ম', 'ships': 'জাহাজ', 'towers': 'মিনার',
+      'domes': 'গম্বুজ', 'theatres': 'থিয়েটার', 'temples': 'মন্দির', 'garment': 'পোশাক', 'beauty': 'সৌন্দর্য',
+      'morning': 'সকাল', 'evening': 'সন্ধ্যা', 'sunlight': 'সূর্যের আলো', 'silver': 'রূপা', 'blue': 'নীল',
+      'bangles': 'চুড়ি', 'rainbow': 'রামধনু', 'tinted': 'রঙিন', 'circles': 'বৃত্ত', 'radiant': 'দীপ্তিমান',
+      'leaves': 'পাতা', 'mountain': 'পাহাড়', 'mist': 'কুয়াশা', 'bloom': 'ফুল', 'cleaves': 'আঁকড়ে ধরে',
+      'middle-aged': 'মধ্যবয়সী', 'purple': 'বেগুনি', 'gold': 'সোনা', 'monotonous': 'একঘেয়ে',
+      'shining': 'চকচকে', 'gleaning': 'সংগ্রহ', 'sparkling': 'ঝলমলে', 'tide': 'জোয়ার', 'revelation': 'প্রকাশ',
+      'darkness': 'অন্ধকার', 'birds': 'পাখি', 'imminent': 'অবশ্যম্ভাবী', 'drops': 'ফোঁটা', 'indignant': 'ক্ষুব্ধ',
+      'blood': 'রক্ত', 'dimmed': 'ম্লান', 'gyre': 'ঘূর্ণি', 'leader': 'নেতা', 'history': 'ইতিহাস',
+      'king': 'রাজা', 'social': 'সামাজিক', 'norms': 'আদর্শ', 'falcon': 'বাজপাখি', 'troubling': 'উদ্বেগজনক',
+      'sight': 'দৃশ্য', 'slouching': 'ঝিমিয়ে পড়া', 'beast': 'জানোয়ার', 'window': 'জানালা', 'adversities': 'প্রতিকূলতা',
+      'nature': 'প্রকৃতি', 'struggle': 'সংগ্রাম', 'existence': 'অস্তিত্ব', 'cough': 'কাশি', 'cold': 'ঠান্ডা',
+      'pain': 'ব্যথা', 'trees': 'গাছ', 'shaking': 'কাঁপছে', 'smell': 'গন্ধ', 'rain': 'বৃষ্টি',
+      'hawker': 'ফেরিওয়ালা', 'sparrows': 'চড়ুই', 'twittering': 'চিৎকার', 'railway': 'রেলপথ',
+      'station': 'স্টেশন', 'front': 'সামনে', 'gate': 'দরজা', 'square': 'চত্বর', 'servant': 'চাকর',
+      'promised': 'প্রতিশ্রুতি', 'care': 'যত্ন', 'josephine': 'জোসেফিন', 'louise': 'লুইস',
+      'photographs': 'ছবি', 'suicide': 'আত্মহত্যা', 'victorian': 'ভিক্টোরিয়ান', 'society': 'সমাজ',
+      'feminine': 'নারীবাদী', 'brently': 'ব্রেন্টলি', 'symbolic': 'প্রতীকী', 'masculine': 'পুরুষতান্ত্রিক',
+      'importunities': 'আবেদন', 'terrified': 'আতঙ্কিত', 'fainted': 'মূর্ছা', 'screamed': 'চিৎকার',
+      'tragedy': 'ট্র্যাজেডি', 'family': 'পরিবার', 'hobbies': 'শখ', 'address': 'ঠিকানা',
+      'migrated': 'স্থানান্তরিত', 'rural': 'গ্রামীণ', 'retreat': 'আশ্রয়', 'self-possessed': 'আত্মসংযমী',
+      'disguised': 'ছদ্মবেশী', 'male': 'পুরুষ', 'ganymede': 'গ্যানিমিড', 'aliena': 'অ্যালিয়েনা',
+      'fredrick': 'ফ্রেডরিক', 'passive': 'কর্মবাচ্য', 'vendor': 'বিক্রেতা', 'remarkable': 'উল্লেখযোগ্য',
+      'complex': 'জটিল', 'phrasal': 'বাক্যাংশ', 'verb': 'ক্রিয়া', 'seized': 'আটক', 'met': 'মিলিত',
+      'arrested': 'গ্রেপ্তার', 'argued': 'তর্ক', 'steeped': 'আবিষ্ট', 'steepling': 'উঁচু',
+      'preposition': 'অব্যয়', 'journeyed': 'ভ্রমণ', 'midway': 'মাঝপথ', 'among': 'মধ্যে',
+      'through': 'মাধ্যমে', 'between': 'মধ্যবর্তী', 'unseen': 'অদেখা', 'passage': 'অনুচ্ছেদ',
+      'shankar': 'শঙ্কর', 'alvarez': 'আলভারেজ', 'strange': 'অদ্ভুত', 'noise': 'শব্দ', 'forest': 'বন',
+      'turmoil': 'বিশৃঙ্খলা', 'jungles': 'জঙ্গল', 'torch': 'টর্চ', 'cautioned': 'সতর্ক',
+      'rifle': 'বন্দুক', 'desperately': 'মরিয়া হয়ে', 'trampling': 'দলন', 'bushes': 'ঝোপ',
+      'hyenas': 'হায়না', 'baboons': 'বেবুন', 'buffalos': 'মহিষ', 'leopards': 'চিতাবাঘ',
+      'shiv': 'শিব', 'charan': 'চরণ', 'yadav': 'যাদব', 'examination': 'পরীক্ষা',
+      'secondary': 'মাধ্যমিক', 'school': 'স্কুল', 'village': 'গ্রাম', 'district': 'জেলা',
+      'failure': 'ব্যর্থতা', 'attempt': 'চেষ্টা', 'board': 'বোর্ড', 'education': 'শিক্ষা',
+      'confidence': 'আত্মবিশ্বাস', 'success': 'সাফল্য', 'subjects': 'বিষয়', 'teachers': 'শিক্ষক',
+      'mother': 'মা', 'father': 'পিতা', 'uncle': 'কাকা', 'members': 'সদস্য', 'brought': 'বড় করেছেন',
+      'tomb': 'সমাধি', 'humayun': 'হুমায়ুন', 'emperor': 'সম্রাট', 'persian': 'পারস্য',
+      'architect': 'স্থপতি', 'instructions': 'নির্দেশ', 'widow': 'বিধবা', 'garden': 'বাগান',
+      'sub-continent': 'উপমহাদেশ', 'influence': 'প্রভাব', 'architecture': 'স্থাপত্য',
+      'graves': 'কবর', 'dormitory': 'শয়নকক্ষ', 'protected': 'সুরক্ষিত', 'monument': 'স্মৃতিসৌধ',
+      'defacing': 'বিকৃতি', 'heritage': 'ঐতিহ্য', 'restoration': 'পুনরুদ্ধার', 'collaboration': 'সহযোগিতা',
+      'archaeological': 'প্রত্নতাত্ত্বিক', 'revitalise': 'পুনর্জীবিত', 'acre': 'একর', 'shrine': 'মাজার',
+      'sufi': 'সুফি', 'saint': 'সন্ত', 'auspicious': 'শুভ', 'buried': 'সমাধিস্থ'
+    };
+
+    function showMeaning(word, el) {
+      const old = el.parentElement.querySelector('.meaning-badge');
+      if (old) old.remove();
+      const lower = word.toLowerCase();
+      let meaning = dict[lower];
+      if (!meaning) {
+        for (let key in dict) {
+          if (key.startsWith(lower.substring(0,3)) && lower.length > 2) {
+            meaning = dict[key];
+            break;
+          }
         }
+      }
+      if (meaning) {
+        const badge = document.createElement('span');
+        badge.className = 'meaning-badge';
+        badge.textContent = 'বাংলা: ' + meaning;
+        el.parentElement.appendChild(badge);
+        setTimeout(() => { if (badge.parentElement) badge.remove(); }, 5000);
+      } else {
+        const badge = document.createElement('span');
+        badge.className = 'meaning-badge';
+        badge.textContent = 'অর্থ খুঁজুন';
+        el.parentElement.appendChild(badge);
+        setTimeout(() => { if (badge.parentElement) badge.remove(); }, 3000);
       }
     }
 
@@ -657,7 +742,7 @@
       ]
     };
 
-    // ----- RENDER WITH RADIO BUTTONS -----
+    // ----- RENDER WITH RADIO BUTTONS + WORD CLICK -----
     let totalCorrect = 0;
     const totalQuestions = 120;
 
@@ -678,6 +763,15 @@
         const text = document.createElement('span');
         text.className = 'q-text';
         text.textContent = item.q;
+        // word click handler
+        text.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const sel = window.getSelection();
+          const word = sel.toString().trim();
+          if (word && word.length > 1) {
+            showMeaning(word, this);
+          }
+        });
         const optsDiv = document.createElement('div');
         optsDiv.className = 'q-options';
         const feedback = document.createElement('div');
@@ -698,13 +792,11 @@
               feedback.className = 'feedback show correct';
               feedback.innerHTML = '✅ Correct!';
               totalCorrect++;
-              // SPAWN GOLDEN SHOWER
               spawnParticles('correct', 180);
             } else {
               div.classList.add('wrong');
               feedback.className = 'feedback show wrong';
               feedback.innerHTML = '❌ Wrong. Correct answer: <span class="answer-reveal">' + item.ans + '</span>';
-              // SPAWN HEAVY RAIN
               spawnParticles('wrong', 300);
             }
             updateScore();
