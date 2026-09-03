@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Model Sets 11–13 · Interactive Study</title>
+  <title>Model Sets 11–13 · Exam Mode</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -11,8 +11,19 @@
       font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
       display: flex;
       min-height: 100vh;
+      overflow-x: hidden;
     }
-    /* ----- SIDEBAR MENU (colourful) ----- */
+    /* ----- particle canvas overlay ----- */
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    /* SIDEBAR */
     .sidebar {
       width: 220px;
       background: linear-gradient(180deg, #1e2b3c 0%, #2c3e50 100%);
@@ -37,9 +48,7 @@
       text-align: center;
       text-shadow: 0 2px 3px rgba(0,0,0,0.3);
     }
-    .menu-group {
-      margin-bottom: 1.8rem;
-    }
+    .menu-group { margin-bottom: 1.8rem; }
     .menu-group-title {
       color: #d4b48c;
       font-size: 0.7rem;
@@ -54,7 +63,6 @@
       display: block;
       color: #d6dce0;
       padding: 0.4rem 0.6rem 0.4rem 1.2rem;
-      text-decoration: none;
       font-size: 0.85rem;
       border-radius: 30px 0 0 30px;
       margin-bottom: 0.2rem;
@@ -78,29 +86,22 @@
     .menu-item.set11:hover { background: rgba(230, 126, 34, 0.2); }
     .menu-item.set12:hover { background: rgba(52, 152, 219, 0.2); }
     .menu-item.set13:hover { background: rgba(46, 204, 113, 0.2); }
-    .menu-divider {
-      border-top: 1px solid #3d4f5e;
-      margin: 1rem 0;
-    }
+    .menu-divider { border-top: 1px solid #3d4f5e; margin: 1rem 0; }
 
-    /* ----- MAIN CONTENT ----- */
-    .main-content {
-      flex: 1;
-      padding: 1.5rem 2rem 3rem;
-      min-width: 0;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+    /* MAIN */
+    .main-content { flex: 1; padding: 1.5rem 2rem 3rem; min-width: 0; }
+    .container { max-width: 1200px; margin: 0 auto; }
     h1 {
       font-size: 2.1rem;
       font-weight: 500;
-      letter-spacing: -0.5px;
       color: #2c3e4f;
       border-left: 6px solid #b8860b;
       padding-left: 1rem;
       margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
     .set-card {
       background: white;
@@ -108,7 +109,6 @@
       box-shadow: 0 12px 30px rgba(0,0,0,0.08);
       padding: 1.8rem 1.8rem 0.5rem;
       margin-bottom: 2.8rem;
-      transition: all 0.1s ease;
       scroll-margin-top: 20px;
     }
     .set-title {
@@ -120,11 +120,7 @@
       margin-bottom: 1.5rem;
       flex-wrap: wrap;
     }
-    .set-title h2 {
-      font-weight: 500;
-      color: #2c3e4f;
-      font-size: 1.7rem;
-    }
+    .set-title h2 { font-weight: 500; color: #2c3e4f; font-size: 1.7rem; }
     .set-title span {
       background: #e8e0d6;
       padding: 0.25rem 1rem;
@@ -132,9 +128,7 @@
       font-size: 0.9rem;
       color: #4a3f35;
     }
-    .unit-block {
-      margin-bottom: 2.2rem;
-    }
+    .unit-block { margin-bottom: 2.2rem; }
     .unit-head {
       font-weight: 600;
       font-size: 1.2rem;
@@ -146,29 +140,23 @@
       letter-spacing: 0.3px;
       margin-bottom: 1rem;
     }
-    .question-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-    }
+    .question-grid { display: flex; flex-direction: column; gap: 0.85rem; }
+
+    /* Question Item */
     .q-item {
       background: #fcfaf7;
       border-radius: 16px;
       padding: 0.9rem 1.3rem;
       border-left: 4px solid #c9b69a;
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-      transition: 0.1s;
-      cursor: pointer;
+      transition: 0.15s;
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
       gap: 0.3rem 1rem;
-      position: relative;
     }
-    .q-item:hover {
-      background: #f8f2ea;
-      border-left-color: #b8860b;
-    }
+    .q-item.correct { border-left-color: #27ae60; background: #f0faf3; }
+    .q-item.wrong { border-left-color: #e74c3c; background: #fdf0ef; }
     .q-label {
       font-weight: 500;
       color: #3a2f26;
@@ -180,48 +168,49 @@
       font-size: 0.98rem;
       color: #1e1b18;
       line-height: 1.5;
-      cursor: pointer;
-      border-radius: 4px;
-      padding: 0 2px;
-      transition: 0.1s;
-    }
-    .q-text:hover {
-      background: #f0e3d3;
     }
     .q-options {
       width: 100%;
       padding-left: 1.2rem;
-      margin-top: 0.2rem;
-      font-size: 0.94rem;
-      color: #2d241e;
+      margin-top: 0.4rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.2rem 1.2rem;
+      gap: 0.5rem 1.5rem;
     }
-    .q-options span {
-      background: #f0ece6;
-      padding: 0.1rem 0.6rem;
+    .q-options label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.94rem;
+      color: #2d241e;
+      cursor: pointer;
+      padding: 0.2rem 0.6rem;
       border-radius: 30px;
-      font-size: 0.85rem;
-      color: #1f1a16;
+      transition: 0.1s;
     }
-    .answer-badge {
-      background: #1f3a3f;
-      color: #f0ede8;
-      font-size: 0.8rem;
-      padding: 0.15rem 0.9rem;
-      border-radius: 40px;
+    .q-options label:hover { background: #ede7df; }
+    .q-options input[type="radio"] {
+      accent-color: #b8860b;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    .q-options input[type="radio"]:disabled { cursor: default; }
+
+    .feedback {
+      width: 100%;
+      font-size: 0.9rem;
       font-weight: 500;
-      letter-spacing: 0.2px;
-      margin-left: auto;
-      opacity: 0;
-      transition: 0.15s;
-      white-space: nowrap;
-      border: 1px solid #3b5a5f;
+      padding: 0.3rem 0.8rem;
+      border-radius: 30px;
+      margin-top: 0.3rem;
+      display: none;
     }
-    .q-item.show-answer .answer-badge {
-      opacity: 1;
-    }
+    .feedback.show { display: inline-block; }
+    .feedback.correct { color: #1e7e34; background: #d4edda; }
+    .feedback.wrong { color: #a71d2a; background: #f8d7da; }
+    .feedback .answer-reveal { font-weight: 600; color: #2c3e4f; }
+
     .unseen-passage {
       background: #eae3da;
       padding: 1.2rem 1.8rem;
@@ -232,9 +221,7 @@
       color: #1f1b17;
       border-left: 6px solid #7d6b56;
     }
-    .unseen-passage strong {
-      color: #2b3e3b;
-    }
+    .unseen-passage strong { color: #2b3e3b; }
     .footnote {
       font-size: 0.8rem;
       color: #7b6e5f;
@@ -243,28 +230,15 @@
       padding-top: 0.6rem;
       text-align: right;
     }
-    /* word meaning popup */
-    .word-mean {
-      background: #2d3e4b;
+
+    .score-badge {
+      background: #2c3e50;
       color: #f5ede4;
-      padding: 0.2rem 1rem;
-      border-radius: 30px;
-      font-size: 0.75rem;
-      margin-left: 0.5rem;
+      padding: 0.2rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      font-weight: 500;
       display: inline-block;
-      font-weight: 400;
-      letter-spacing: 0.3px;
-      border: 1px solid #b8860b;
-    }
-    .meaning-badge {
-      background: #1f3a3f;
-      color: #f0ede8;
-      font-size: 0.75rem;
-      padding: 0.1rem 0.8rem;
-      border-radius: 30px;
-      display: inline-block;
-      margin-left: 0.5rem;
-      border: 1px solid #b8860b;
     }
 
     @media (max-width: 800px) {
@@ -290,14 +264,17 @@
     }
     @media (max-width: 600px) {
       .q-item { flex-direction: column; align-items: flex-start; }
-      .answer-badge { margin-left: 0; margin-top: 0.3rem; }
       .q-options { padding-left: 0.5rem; }
+      .q-options label { font-size: 0.85rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- ===== SIDEBAR ===== -->
+<!-- PARTICLE CANVAS -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- SIDEBAR -->
 <nav class="sidebar">
   <h2>📘 MODEL SETS</h2>
   <div class="menu-group">
@@ -311,68 +288,222 @@
     <div class="menu-group-title">Jump to Unit</div>
     <button class="menu-item" data-target="prose">📖 Prose</button>
     <button class="menu-item" data-target="verse">🎭 Verse</button>
-    <button class="menu-item" data-target="rapid">⚡ Rapid Reader</button>
+    <button class="menu-item" data-target="rapid">⚡ Rapid</button>
     <button class="menu-item" data-target="grammar">📝 Grammar</button>
     <button class="menu-item" data-target="unseen">🔍 Unseen</button>
   </div>
   <div class="menu-divider"></div>
   <div style="color:#8a9aa8; font-size:0.7rem; text-align:center; margin-top:0.5rem;">
-    <span style="display:inline-block; background:#b8860b; width:10px; height:10px; border-radius:50%;"></span> click word → বাংলা অর্থ
+    <span style="display:inline-block; background:#27ae60; width:10px; height:10px; border-radius:50%;"></span> correct
+    <span style="display:inline-block; background:#e74c3c; width:10px; height:10px; border-radius:50%; margin-left:0.5rem;"></span> wrong
   </div>
 </nav>
 
-<!-- ===== MAIN ===== -->
+<!-- MAIN -->
 <div class="main-content">
   <div class="container">
-    <h1>📘 Model Sets 11–13 · all sections</h1>
+    <h1>
+      <span>📘 Model Sets 11–13 · Exam Mode</span>
+      <span class="score-badge" id="globalScore">0 / 120</span>
+    </h1>
 
     <!-- SET 11 -->
     <div class="set-card" id="set11">
-      <div class="set-title"><h2>Set 11</h2><span>Time: 1h 15m · 40 marks</span></div>
+      <div class="set-title"><h2>Set 11</h2><span>40 marks</span></div>
       <div class="unit-block" id="prose"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set11-prose"></div></div>
       <div class="unit-block" id="verse"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set11-verse"></div></div>
       <div class="unit-block" id="rapid"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set11-rapid"></div></div>
-      <div class="unit-block" id="grammar"><div class="unit-head">📝 Unit-IV · Textual Grammar</div><div class="question-grid" id="set11-grammar"></div></div>
+      <div class="unit-block" id="grammar"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set11-grammar"></div></div>
       <div class="unit-block" id="unseen"><div class="unit-head">🔍 Unit-V · Unseen</div>
         <div class="unseen-passage"><strong>Passage (Set 11):</strong> In the middle of the night, Shankar was waken up by a strange loud noise from the forest. There seemed to be a huge turmoil in the jungles. Alvarez too had been up. They listen carefully - and what they heard was truly strange. They had no clue about what was happening. Shankar switched on his torch and was about to leave the tent, but Alvarez stopped him. He said, "Don't rush out in these unknown jungles at night. I have cautioned you many times. Besides, where is your riffle?" It was pitched dark outside. What they saw in the torch light defied logic. Wild animals were running desperately, trampling on bushes and small plants. They came out of the mountain forest on the west and ran towards the hill on the east. There were hyenas, baboons and wild buffalos. Two leopards passed close by them.</div>
         <div class="question-grid" id="set11-unseen"></div>
       </div>
-      <div class="footnote">click any question → show answer · click any word → বাংলা অর্থ</div>
     </div>
 
     <!-- SET 12 -->
     <div class="set-card" id="set12">
-      <div class="set-title"><h2>Set 12</h2><span>Time: 1h 15m · 40 marks</span></div>
+      <div class="set-title"><h2>Set 12</h2><span>40 marks</span></div>
       <div class="unit-block"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set12-prose"></div></div>
       <div class="unit-block"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set12-verse"></div></div>
       <div class="unit-block"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set12-rapid"></div></div>
-      <div class="unit-block"><div class="unit-head">📝 Unit-IV · Textual Grammar</div><div class="question-grid" id="set12-grammar"></div></div>
+      <div class="unit-block"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set12-grammar"></div></div>
       <div class="unit-block"><div class="unit-head">🔍 Unit-V · Unseen</div>
         <div class="unseen-passage"><strong>Passage (Set 12):</strong> Seventy seven years old Shiv Charan Yadav has been burning the midnight oil for the past forty six years in repeated attempts to clear the secondary school examination at Khohari village near Behror in Alwar district. Not one to accept failure, he will be taking the exam for the forty-seventh time this year. The Rajasthan Board of Secondary Education has proven a tough nut for him to crack. He has failed forty six times. One Thursday, he exuded confidence about success in his forty-seventh attempt, "I appeared for the first time in 1968. I failed that year. Each time I take the exam, I fail in one or the other subjects. This time I hope to pass in all. I have taken classes from some school teachers. This time I hope to clear the exam." Yadav lost his mother when he was two months old. His father died when he was ten. His uncle and his other family members brought him up.</div>
         <div class="question-grid" id="set12-unseen"></div>
       </div>
-      <div class="footnote">click any question → show answer · click any word → বাংলা অর্থ</div>
     </div>
 
     <!-- SET 13 -->
     <div class="set-card" id="set13">
-      <div class="set-title"><h2>Set 13</h2><span>Time: 1h 15m · 40 marks</span></div>
+      <div class="set-title"><h2>Set 13</h2><span>40 marks</span></div>
       <div class="unit-block"><div class="unit-head">📖 Unit-I · Prose</div><div class="question-grid" id="set13-prose"></div></div>
       <div class="unit-block"><div class="unit-head">🎭 Unit-II · Verse</div><div class="question-grid" id="set13-verse"></div></div>
       <div class="unit-block"><div class="unit-head">⚡ Unit-III · Rapid Reader</div><div class="question-grid" id="set13-rapid"></div></div>
-      <div class="unit-block"><div class="unit-head">📝 Unit-IV · Textual Grammar</div><div class="question-grid" id="set13-grammar"></div></div>
+      <div class="unit-block"><div class="unit-head">📝 Unit-IV · Grammar</div><div class="question-grid" id="set13-grammar"></div></div>
       <div class="unit-block"><div class="unit-head">🔍 Unit-V · Unseen</div>
         <div class="unseen-passage"><strong>Passage (Set 13):</strong> The tomb of Humayun, the second Mughal emperor was built between 1569 and 1571 by the Persian architect Mirak Mirza Ghiyath under the instructions of Humayun's grieving widow, Hamida Banu Begum. The oldest garden-tomb in the Indian sub-continent, it is the first example of the Persian influence on Indian architecture. It houses more than 1000 graves, which has led to it being called 'the Dormitory of the Mughals'. It houses the tombs of the Mughal emperors, Jahandar Shah and Farrukh Siyar, and also of Darah Shikoh - Shahjahan's murdered son. The tomb is a protected monument which means the defacing it in any way would cost you Rs. 5000 or three months in prison. It is on the world Heritage list, and recognized internationally as a monument that deserves protection for the benefit of all humanity. A massive restoration process was carried out over four years to ensure that the maintenance of the tomb met international standards. Between the years 2000 and 2003, the Agha Khan Trust for Culture, in collaboration with the Archaeological Survey of India, carried out a project to revitalise the 30 acre garden and the monument itself. The tomb is located near the shrine of an important Sufi Saint, Nizamuddin Auliya. It is considered auspicious to be buried near the tomb of a saint, and there are various other monuments outside the main tomb.</div>
         <div class="question-grid" id="set13-unseen"></div>
       </div>
-      <div class="footnote">click any question → show answer · click any word → বাংলা অর্থ</div>
     </div>
+    <div class="footnote">Select an option → instant feedback · 🎆 correct: golden shower · 🌧️ wrong: heavy rain</div>
   </div>
 </div>
 
 <script>
   (function() {
-    // ---------- DATA ----------
+    // ---------- PARTICLE SYSTEM ----------
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    let particles = [];
+    let animationId = null;
+    let isAnimating = false;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor(x, y, type) {
+        this.x = x || W/2 + (Math.random() - 0.5) * 100;
+        this.y = y || -20;
+        this.type = type || 'correct'; // 'correct' or 'wrong'
+        if (this.type === 'correct') {
+          // golden sparkle
+          this.size = 3 + Math.random() * 8;
+          this.speed = 2 + Math.random() * 6;
+          this.wobble = Math.random() * 0.05;
+          this.angle = Math.random() * Math.PI * 2;
+          this.color = `hsl(${40 + Math.random() * 20}, 100%, ${60 + Math.random() * 30}%)`;
+          this.glow = true;
+          this.life = 1;
+          this.decay = 0.003 + Math.random() * 0.008;
+        } else {
+          // heavy rain drop
+          this.size = 2 + Math.random() * 4;
+          this.speed = 8 + Math.random() * 14;
+          this.wobble = 0.02;
+          this.angle = Math.random() * Math.PI * 2;
+          this.color = `rgba(100, 120, 140, ${0.3 + Math.random() * 0.5})`;
+          this.glow = false;
+          this.life = 1;
+          this.decay = 0.002 + Math.random() * 0.005;
+          this.tail = 10 + Math.random() * 20;
+          this.x = Math.random() * W;
+          this.y = -20 - Math.random() * 100;
+        }
+        this.vx = (Math.random() - 0.5) * (this.type === 'correct' ? 1.5 : 0.5);
+        this.vy = this.speed;
+        this.gravity = this.type === 'correct' ? 0.02 : 0.05;
+      }
+
+      update() {
+        if (this.type === 'correct') {
+          this.x += Math.sin(this.angle) * 1.2 + this.vx * 0.5;
+          this.y += this.vy * 0.8;
+          this.vy += this.gravity;
+          this.angle += this.wobble;
+          this.life -= this.decay;
+          this.size *= 0.998;
+        } else {
+          // rain
+          this.x += Math.sin(this.angle) * 0.3;
+          this.y += this.vy;
+          this.vy += this.gravity;
+          this.life -= this.decay;
+        }
+        return this.life > 0 && this.y < H + 50;
+      }
+
+      draw(ctx) {
+        if (this.type === 'correct') {
+          const alpha = this.life;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.shadowColor = '#ffd700';
+          ctx.shadowBlur = 20;
+          ctx.beginPath();
+          // star/sparkle shape
+          const spikes = 5;
+          const outerRadius = this.size;
+          const innerRadius = this.size * 0.4;
+          let rot = Math.PI / 2 * 3;
+          const step = Math.PI / spikes;
+          ctx.moveTo(this.x, this.y - outerRadius);
+          for (let i = 0; i < spikes; i++) {
+            ctx.lineTo(this.x + Math.cos(rot) * outerRadius, this.y + Math.sin(rot) * outerRadius);
+            rot += step;
+            ctx.lineTo(this.x + Math.cos(rot) * innerRadius, this.y + Math.sin(rot) * innerRadius);
+            rot += step;
+          }
+          ctx.closePath();
+          ctx.fillStyle = this.color;
+          ctx.fill();
+          ctx.restore();
+        } else {
+          // rain drop
+          const alpha = this.life * 0.7;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = this.color;
+          ctx.lineWidth = this.size * 0.6;
+          ctx.shadowColor = 'rgba(80,100,120,0.2)';
+          ctx.shadowBlur = 4;
+          ctx.beginPath();
+          ctx.moveTo(this.x, this.y);
+          ctx.lineTo(this.x + this.vx * 0.5, this.y + this.tail);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }
+
+    function spawnParticles(type, count = 120) {
+      const centerX = W/2;
+      const centerY = H/3;
+      for (let i = 0; i < count; i++) {
+        let p;
+        if (type === 'correct') {
+          const angle = Math.random() * Math.PI * 2;
+          const radius = Math.random() * 300;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius * 0.4 - 50;
+          p = new Particle(x, y, 'correct');
+          p.vy = 1 + Math.random() * 4;
+          p.vx = (Math.random() - 0.5) * 3;
+        } else {
+          p = new Particle(0, 0, 'wrong');
+        }
+        particles.push(p);
+      }
+      if (!isAnimating) {
+        isAnimating = true;
+        animate();
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles = particles.filter(p => p.update());
+      for (let p of particles) {
+        p.draw(ctx);
+      }
+      if (particles.length > 0) {
+        animationId = requestAnimationFrame(animate);
+      } else {
+        isAnimating = false;
+        ctx.clearRect(0, 0, W, H);
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+      }
+    }
+
+    // ---------- EXAM DATA ----------
     const Q = {
       s11prose: [
         { q: 'The astrologer transacted his business with the light of a ________.', opts: ['hissing gas lamp','flare','cycle lamp','steel lamp'], ans: 'flare' },
@@ -526,7 +657,14 @@
       ]
     };
 
-    // render function
+    // ----- RENDER WITH RADIO BUTTONS -----
+    let totalCorrect = 0;
+    const totalQuestions = 120;
+
+    function updateScore() {
+      document.getElementById('globalScore').textContent = totalCorrect + ' / ' + totalQuestions;
+    }
+
     function renderSet(sectionId, data) {
       const container = document.getElementById(sectionId);
       if (!container) return;
@@ -540,125 +678,50 @@
         const text = document.createElement('span');
         text.className = 'q-text';
         text.textContent = item.q;
-        // make word clickable for meaning
-        text.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const sel = window.getSelection();
-          const word = sel.toString().trim();
-          if (word && word.length > 1) {
-            showMeaning(word, this);
-          }
+        const optsDiv = document.createElement('div');
+        optsDiv.className = 'q-options';
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback';
+        const radioName = 'q_' + sectionId + '_' + idx;
+        item.opts.forEach((opt) => {
+          const lbl = document.createElement('label');
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = radioName;
+          radio.value = opt;
+          radio.addEventListener('change', function() {
+            const allRadios = optsDiv.querySelectorAll('input[type="radio"]');
+            allRadios.forEach(r => r.disabled = true);
+            const isCorrect = (this.value === item.ans);
+            if (isCorrect) {
+              div.classList.add('correct');
+              feedback.className = 'feedback show correct';
+              feedback.innerHTML = '✅ Correct!';
+              totalCorrect++;
+              // SPAWN GOLDEN SHOWER
+              spawnParticles('correct', 180);
+            } else {
+              div.classList.add('wrong');
+              feedback.className = 'feedback show wrong';
+              feedback.innerHTML = '❌ Wrong. Correct answer: <span class="answer-reveal">' + item.ans + '</span>';
+              // SPAWN HEAVY RAIN
+              spawnParticles('wrong', 300);
+            }
+            updateScore();
+          });
+          lbl.appendChild(radio);
+          lbl.appendChild(document.createTextNode(opt));
+          optsDiv.appendChild(lbl);
         });
-        const opts = document.createElement('div');
-        opts.className = 'q-options';
-        opts.innerHTML = item.opts.map(o => `<span>${o}</span>`).join(' ');
-        const ans = document.createElement('span');
-        ans.className = 'answer-badge';
-        ans.textContent = '✓ ' + item.ans;
         div.appendChild(label);
         div.appendChild(text);
-        div.appendChild(opts);
-        div.appendChild(ans);
-        div.addEventListener('click', function(e) {
-          // ignore if click on word-meaning or text (handled separately)
-          if (e.target.classList.contains('q-text')) return;
-          this.classList.toggle('show-answer');
-        });
+        div.appendChild(optsDiv);
+        div.appendChild(feedback);
         container.appendChild(div);
       });
     }
 
-    // ----- BENGALI MEANING (50%+ coverage) -----
-    const dict = {
-      'astrologer': 'জ্যোতিষী', 'transacted': 'সম্পন্ন', 'business': 'ব্যবসা', 'light': 'আলো', 'flare': 'শিখা',
-      'count': 'গণনা', 'amount': 'পরিমাণ', 'money': 'টাকা', 'annas': 'আনা', 'assertion': 'বক্তব্য',
-      'reason': 'কারণ', 'gratified': 'সন্তুষ্ট', 'attacker': 'আক্রমণকারী', 'crushed': 'চূর্ণ', 'lorry': 'ট্রাক',
-      'revenge': 'প্রতিশোধ', 'agitated': 'উত্তেজিত', 'semi-darkness': 'অর্ধ-অন্ধকার', 'park': 'পার্ক',
-      'hooting': 'শব্দ', 'cars': 'গাড়ি', 'swearing': 'গালি', 'jutka': 'জুটকা', 'drivers': 'চালক',
-      'babble': 'কোলাহল', 'crowd': 'ভিড়', 'realisation': 'উপলব্ধি', 'religions': 'ধর্ম', 'literature': 'সাহিত্য',
-      'stories': 'গল্প', 'languages': 'ভাষা', 'communications': 'যোগাযোগ', 'symbols': 'প্রতীক',
-      'bhaktas': 'ভক্ত', 'vedanta': 'বেদান্ত', 'guides': 'পথপ্রদর্শন', 'narrator': 'বর্ণনাকারী',
-      'reflection': 'প্রতিফলন', 'brilliant': 'উজ্জ্বল', 'streams': 'স্রোত', 'camp-fire': 'শিবিরের আগুন',
-      'juniper': 'জুনিপার', 'servants': 'চাকর', 'fuel': 'জ্বালানি', 'pine-wood': 'পাইন বন', 'tent': 'তাঁবু',
-      'frozen': 'হিমায়িত', 'river': 'নদী', 'steep': 'আবৃত', 'overspread': 'বিস্তৃত', 'mighty': 'শক্তিশালী',
-      'heart': 'হৃদয়', 'human': 'মানুষ', 'activities': 'কাজকর্ম', 'ships': 'জাহাজ', 'towers': 'মিনার',
-      'domes': 'গম্বুজ', 'theatres': 'থিয়েটার', 'temples': 'মন্দির', 'garment': 'পোশাক', 'beauty': 'সৌন্দর্য',
-      'morning': 'সকাল', 'evening': 'সন্ধ্যা', 'sunlight': 'সূর্যের আলো', 'silver': 'রূপা', 'blue': 'নীল',
-      'bangles': 'চুড়ি', 'rainbow': 'রামধনু', 'tinted': 'রঙিন', 'circles': 'বৃত্ত', 'radiant': 'দীপ্তিমান',
-      'leaves': 'পাতা', 'mountain': 'পাহাড়', 'mist': 'কুয়াশা', 'bloom': 'ফুল', 'cleaves': 'আঁকড়ে ধরে',
-      'middle-aged': 'মধ্যবয়সী', 'purple': 'বেগুনি', 'gold': 'সোনা', 'monotonous': 'একঘেয়ে',
-      'shining': 'চকচকে', 'gleaning': 'সংগ্রহ', 'sparkling': 'ঝলমলে', 'tide': 'জোয়ার', 'revelation': 'প্রকাশ',
-      'darkness': 'অন্ধকার', 'birds': 'পাখি', 'imminent': 'অবশ্যম্ভাবী', 'drops': 'ফোঁটা', 'indignant': 'ক্ষুব্ধ',
-      'blood': 'রক্ত', 'dimmed': 'ম্লান', 'gyre': 'ঘূর্ণি', 'leader': 'নেতা', 'history': 'ইতিহাস',
-      'king': 'রাজা', 'social': 'সামাজিক', 'norms': 'আদর্শ', 'falcon': 'বাজপাখি', 'troubling': 'উদ্বেগজনক',
-      'sight': 'দৃশ্য', 'slouching': 'ঝিমিয়ে পড়া', 'beast': 'জানোয়ার', 'window': 'জানালা', 'adversities': 'প্রতিকূলতা',
-      'nature': 'প্রকৃতি', 'struggle': 'সংগ্রাম', 'existence': 'অস্তিত্ব', 'cough': 'কাশি', 'cold': 'ঠান্ডা',
-      'pain': 'ব্যথা', 'trees': 'গাছ', 'shaking': 'কাঁপছে', 'smell': 'গন্ধ', 'rain': 'বৃষ্টি',
-      'hawker': 'ফেরিওয়ালা', 'sparrows': 'চড়ুই', 'twittering': 'চিৎকার', 'railway': 'রেলপথ',
-      'station': 'স্টেশন', 'front': 'সামনে', 'gate': 'দরজা', 'square': 'চত্বর', 'servant': 'চাকর',
-      'promised': 'প্রতিশ্রুতি', 'care': 'যত্ন', 'josephine': 'জোসেফিন', 'louise': 'লুইস',
-      'photographs': 'ছবি', 'suicide': 'আত্মহত্যা', 'victorian': 'ভিক্টোরিয়ান', 'society': 'সমাজ',
-      'feminine': 'নারীবাদী', 'brently': 'ব্রেন্টলি', 'symbolic': 'প্রতীকী', 'masculine': 'পুরুষতান্ত্রিক',
-      'importunities': 'আবেদন', 'terrified': 'আতঙ্কিত', 'fainted': 'মূর্ছা', 'screamed': 'চিৎকার',
-      'tragedy': 'ট্র্যাজেডি', 'family': 'পরিবার', 'hobbies': 'শখ', 'address': 'ঠিকানা',
-      'migrated': 'স্থানান্তরিত', 'rural': 'গ্রামীণ', 'retreat': 'আশ্রয়', 'self-possessed': 'আত্মসংযমী',
-      'disguised': 'ছদ্মবেশী', 'male': 'পুরুষ', 'ganymede': 'গ্যানিমিড', 'aliena': 'অ্যালিয়েনা',
-      'fredrick': 'ফ্রেডরিক', 'passive': 'কর্মবাচ্য', 'flare': 'শিখা', 'vendor': 'বিক্রেতা',
-      'remarkable': 'উল্লেখযোগ্য', 'complex': 'জটিল', 'phrasal': 'বাক্যাংশ', 'verb': 'ক্রিয়া',
-      'seized': 'আটক', 'met': 'মিলিত', 'arrested': 'গ্রেপ্তার', 'argued': 'তর্ক',
-      'steeped': 'আবিষ্ট', 'steepling': 'উঁচু', 'preposition': 'অব্যয়', 'journeyed': 'ভ্রমণ',
-      'midway': 'মাঝপথ', 'among': 'মধ্যে', 'through': 'মাধ্যমে', 'between': 'মধ্যবর্তী',
-      'unseen': 'অদেখা', 'passage': 'অনুচ্ছেদ', 'shankar': 'শঙ্কর', 'alvarez': 'আলভারেজ',
-      'strange': 'অদ্ভুত', 'noise': 'শব্দ', 'forest': 'বন', 'turmoil': 'বিশৃঙ্খলা', 'jungles': 'জঙ্গল',
-      'torch': 'টর্চ', 'cautioned': 'সতর্ক', 'rifle': 'বন্দুক', 'desperately': 'মরিয়া হয়ে',
-      'trampling': 'দলন', 'bushes': 'ঝোপ', 'hyenas': 'হায়না', 'baboons': 'বেবুন', 'buffalos': 'মহিষ',
-      'leopards': 'চিতাবাঘ', 'shiv': 'শিব', 'charan': 'চরণ', 'yadav': 'যাদব', 'examination': 'পরীক্ষা',
-      'secondary': 'মাধ্যমিক', 'school': 'স্কুল', 'village': 'গ্রাম', 'district': 'জেলা',
-      'failure': 'ব্যর্থতা', 'attempt': 'চেষ্টা', 'board': 'বোর্ড', 'education': 'শিক্ষা',
-      'confidence': 'আত্মবিশ্বাস', 'success': 'সাফল্য', 'subjects': 'বিষয়', 'teachers': 'শিক্ষক',
-      'mother': 'মা', 'father': 'পিতা', 'uncle': 'কাকা', 'members': 'সদস্য', 'brought': 'বড় করেছেন',
-      'tomb': 'সমাধি', 'humayun': 'হুমায়ুন', 'emperor': 'সম্রাট', 'persian': 'পারস্য',
-      'architect': 'স্থপতি', 'instructions': 'নির্দেশ', 'widow': 'বিধবা', 'garden': 'বাগান',
-      'sub-continent': 'উপমহাদেশ', 'influence': 'প্রভাব', 'architecture': 'স্থাপত্য',
-      'graves': 'কবর', 'dormitory': 'শয়নকক্ষ', 'protected': 'সুরক্ষিত', 'monument': 'স্মৃতিসৌধ',
-      'defacing': 'বিকৃতি', 'heritage': 'ঐতিহ্য', 'restoration': 'পুনরুদ্ধার', 'collaboration': 'সহযোগিতা',
-      'archaeological': 'প্রত্নতাত্ত্বিক', 'revitalise': 'পুনর্জীবিত', 'acre': 'একর', 'shrine': 'মাজার',
-      'sufi': 'সুফি', 'saint': 'সন্ত', 'auspicious': 'শুভ', 'buried': 'সমাধিস্থ'
-    };
-
-    function showMeaning(word, el) {
-      // remove any existing meaning badge
-      const old = el.parentElement.querySelector('.meaning-badge');
-      if (old) old.remove();
-      const lower = word.toLowerCase();
-      let meaning = dict[lower];
-      if (!meaning) {
-        // try partial match (first 3 letters)
-        for (let key in dict) {
-          if (key.startsWith(lower.substring(0,3)) && lower.length > 2) {
-            meaning = dict[key];
-            break;
-          }
-        }
-      }
-      if (meaning) {
-        const badge = document.createElement('span');
-        badge.className = 'meaning-badge';
-        badge.textContent = 'বাংলা: ' + meaning;
-        el.parentElement.appendChild(badge);
-        // auto remove after 6 sec
-        setTimeout(() => { if (badge.parentElement) badge.remove(); }, 6000);
-      } else {
-        // fallback: show a generic
-        const badge = document.createElement('span');
-        badge.className = 'meaning-badge';
-        badge.textContent = 'অর্থ খুঁজুন';
-        el.parentElement.appendChild(badge);
-        setTimeout(() => { if (badge.parentElement) badge.remove(); }, 4000);
-      }
-    }
-
-    // render all sets
+    // render all
     renderSet('set11-prose', Q.s11prose);
     renderSet('set11-verse', Q.s11verse);
     renderSet('set11-rapid', Q.s11rapid);
@@ -677,7 +740,7 @@
     renderSet('set13-grammar', Q.s13grammar);
     renderSet('set13-unseen', Q.s13unseen);
 
-    // SIDEBAR NAVIGATION
+    // SIDEBAR NAV
     document.querySelectorAll('.menu-item[data-target]').forEach(btn => {
       btn.addEventListener('click', function() {
         const target = this.dataset.target;
@@ -686,20 +749,15 @@
         else if (target === 'set12') el = document.getElementById('set12');
         else if (target === 'set13') el = document.getElementById('set13');
         else {
-          // unit jump: find first element with that unit id
           el = document.getElementById(target);
           if (!el) {
-            // try to find any set card containing that unit
             const all = document.querySelectorAll('.set-card');
             for (let card of all) {
-              const found = card.querySelector('#' + target);
-              if (found) { el = card; break; }
+              if (card.querySelector('#' + target)) { el = card; break; }
             }
           }
         }
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
   })();
